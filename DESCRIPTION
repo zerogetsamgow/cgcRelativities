@@ -21,3 +21,5 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+URL: https://github.com/zerogetsamgow/cgcRelativities
+BugReports: https://github.com/zerogetsamgow/cgcRelativities/issues
