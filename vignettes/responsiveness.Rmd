@@ -1,0 +1,164 @@
+---
+title: "responsiveness"
+author: "Sam Gow"
+output:
+  rmarkdown::html_vignette: default
+  rmarkdown::pdf_vignette: default
+vignette: "%\\VignetteIndexEntry{responsiveness} %\\VignetteEngine{knitr::rmarkdown}
+  %\\VignetteEncoding{UTF-8}\n"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(cgcRelativities)
+```
+
+In its [Issues Paper](https://assets.pc.gov.au/2025-11/gst-reforms-issues.pdf?VersionId=YQP9pGfxnDPTIkkKhn48nGko5OncLRWw), the Productivity Commission has asked 'whether the [current approach to horizontal fiscal equalisation] strike[s] the right balance between responding to changing circumstances and providing certainty around revenue'.
+
+This submission contends that features of the CGC's methodology that aim to smooth variation in GST payments undermine the objective of horizontal fiscal equalisation and by doing so risks creating mismatches between state and territory revenue and expenditure requirements. Horizontal fiscal equalisation should aim to match revenue with expenditure needs in a given year, rather than revenue from year to year.
+
+The CGC's current approach involves three features that aim to provide additional certainty about state and territory GST payment revenue:
+
+-   recommended relativities are provided prior to the commencement of the year they apply - by providing its recommendations for 2025-26 before the start of that year, the CGC reduces uncertainty about how much each state will receive when they are preparing their 2025-26 budgets (some uncertainty remain as the total amount of GST and the populations used for calculating payments aren't settled until the second half of 2026).
+
+-   the recommended relativities (prior to any application of a floor) average the CGC's assessment of state fiscal capacity in three previous years known as annual 'relativities'. Averaging over three years smooth variations in the series of recommended relativities. For 2025-26, the recommended relativies averaged the CGC's assessment of state fiscal capacities in 2023-24, 2022-23, and 2021-22.
+
+-   since 2022-23, the CGC's recommendation have limited by a floor initially set at 0.70 in 2022-23 then increased to 0.75 from 2024-25.[^1]
+
+[^1]: This submission does not deal with the latter feature which is clearly flawed and is likely to be the subject of multiple submissions that will make strong arguments for its removal.
+
+By making the GST payments more predictable in this way, the CGC is making them less effective in equalising fiscal capacity. However, the case for reducing uncertainty is unclear. State budgets are also affected by many other sources of uncertainty. State treasurer's may be more certain about the amount of GST they will receive, but overall they are less likely to have the fiscal capacity in that year to provide a similar level of services. For example, if a state's revenue raising capacity drops between the assessment period and the application year, they won't receive enough GST to cover this shortfall. Increasing certainty about GST payments at the expense of equalising fiscal capacity is likely to make budgeting harder, not easier.
+
+This submission argues that increasing the predictability of GST payments to the states should be treated as a secondary consideration to the CGC's principal objective - fiscal equalisation - if not abandoned altogether in the design of the CGC's methodology.
+
+Combined the first two features listed above result in CGC recommendations that can poorly reflect the fiscal capacity of states in the year they apply. This can be seen in the chart below, Western Australia's strong fiscal capacity through 2020-21 and 2021-22 wasn't reflected in the relativities recommended (yellow dots) for those years, and would have taken effect in 2022-23 if a floor had not been introduced. As a result, Western Australia much more revenue than was required to meet its fiscal needs in 2020-21 and 2021-22 and anticipated receiving insufficient revenue to meet those needs in 2022-23. The anticipation of this shortfall likely inspired that state's argument for a floor. Adopting relativities based on more contemporaneous data would have been a better solution than a floor.
+
+### Fiscal capacity in the prior year is a better predictor than the CGC's uncronstrained recommendations
+
+```{r poor_predicter}
+
+# Get last estimate of relativity for each year
+relativies_actual =
+  relativities_yearly |> 
+  dplyr::group_by(relativity_year , state_name) |>
+  dplyr::arrange(state_name, desc(relativity_year ), desc(update_year)) |>
+  dplyr::filter(row_number()==n()) |> 
+  dplyr::mutate(relativity_type = "Actual")
+
+# Get annual relativity for Prior-year
+relativities_prior =
+  relativities_yearly |>
+  dplyr::group_by(relativity_year , state_name) |>
+  dplyr::arrange(state_name, desc(relativity_year ), desc(update_year)) |>
+  dplyr::filter(row_number()==n()) |>
+  dplyr::mutate(relativity_year = relativity_year + years(1)) |>
+  dplyr::mutate(relativity_type="Prior year") |>
+  dplyr::ungroup()
+
+
+# Combine all data
+all.relativities =
+  bind_rows(
+    relativies_actual,
+    relativities_prior,
+    relativities_floorless |> mutate(relativity_type = "Recommended")
+  ) 
+
+# Create plot for headline chart
+all.plot =
+  ggplot(
+    all.relativities |> filter(!str_detect(state_name,"Northern|Tasmania")),
+    aes(x=relativity_year - months(6),
+        y=assess_value,
+        colour=relativity_type,
+        #fill=relativity_type
+    )
+  )+
+  geom_point(size=1,alpha=.8)+
+  facet_wrap(facets= vars(state_name), nrow=2,
+             labeller = labeller(state_name = label_wrap_gen(width = 20))) +
+  scale_x_date(name=NULL,date_labels = "%y",date_breaks="1 years",
+               limits = c(lubridate::dmy("30-9-2018"),NA))+
+  scale_y_continuous(name="Relativity")+
+  scale_colour_viridis_d(name=NULL, option="plasma")+
+  theme_minimal()+
+  theme(plot.margin=margin(0.5,0.5,0.5,0.5,"cm"),
+        legend.margin = margin(0,0,0,0,"cm"),
+        legend.position = "bottom",
+        plot.background = element_rect(fill = "white", colour = NULL),
+        axis.text.x=element_text(hjust=0.5))
+
+plot(all.plot)
+
+```
+
+Fiscal equalisation could be improved if the CGC's recommendations: \* applied in the year they are provided - that is, the recommendations made on 14 March 2025 would apply to 2024-25 payments. \* were based only on an assessment of the most recent year data is available for, rather than an average of three years. The chart above shows the relativities based on this approach as pink dots. In general, they are a better reflection of the fiscal capacity when they would apply then the current recommendations. This can be seen in the chart below, where the assessed fiscal capacity for the prior year has generally been closer to actual fiscal capacity in any given year than the CGC's recommendations.
+
+### Fiscal capacity in the prior year is a better predictor than the CGC's recommendations
+
+```{r difference_plot}
+
+difference.relativities =
+  all.relativities |>
+  dplyr::filter(!relativity_year>ymd("2024-6-30")) |>
+  dplyr::group_by(state_name, relativity_year) |>
+  dplyr::arrange(state_name, relativity_year,relativity_type) |>
+  dplyr::mutate(assess_value=assess_value-first(assess_value)) |>
+  dplyr::filter(!str_detect(relativity_type,"Actual"))
+
+difference.plot =
+  ggplot2::ggplot(
+    difference.relativities |>
+      dplyr::filter(!stringr::str_detect(state_name,"Northern|Tasmania")),
+    ggplot2::aes(x=relativity_year - months(6),
+        y=assess_value,
+        colour=relativity_type,
+        fill=relativity_type
+    )
+  )+
+  ggplot2::geom_col(position = position_identity())+
+  ggplot2::facet_wrap(facets=vars(state_name),nrow=2) +
+  ggplot2::scale_x_date(name=NULL,date_labels = "%y", date_breaks = "1 years",
+               limits = c(lubridate::dmy("30-6-2018"),NA))+
+  ggplot2::ggthemetheme_minimal()+
+  ggplot2::theme(plot.margin=margin(0.5,0.5,0,0.5,"cm"),
+        legend.margin = margin(0,0,0,0,"cm"),
+        legend.position = "bottom",
+        legend.key.size = unit(4,"mm"),
+        axis.text.x = element_text(hjust=.5)
+
+  )
+
+plot(difference.plot)
+```
+
+As shown in the table below, relativies calculated using this new method would have been closer on average to actual fiscal requirements in the year of application than the current approach used to make recommendations for all states and territories over the period 2019-20 to 2024-25.
+
+### Mean difference betwen actual fiscal need relativity and recommended relativity using new method and as recommended, 2019-20 to 2024-25
+
+```{r difference_table}
+
+difference_summary =
+  difference.relativities |> 
+  filter(relativity_year>dmy("30-6-2019")) |> 
+  group_by(state_name, relativity_type) |> 
+  summarise(mean_value = round(mean(assess_value),5)) |>
+  pivot_wider(names_from = relativity_type, values_from = mean_value)
+
+knitr::kable(
+  difference_summary |> 
+    rename("State or territory" = "state_name",
+           "New method"= "Prior year")) |> 
+  kableExtra::kable_styling() 
+
+```
+
+If I was a state treasurer, I would prefer this outcome to the certainty provided by the current approach. There are other options for states to smooth revenue over time (borrowing and saving) or better plan for changes (improving forecasting methods) that don't detract from fiscal equalisation.
+
+There is also no evidence that increasing certainty of GST payments leads to better fiscal decision making. The evidence available suggests states and territory may spend [windfall payments](https://www.theage.com.au/national/victoria-s-spending-decision-reignites-spat-between-states-over-gst-carve-up-20250522-p5m1fs.html) or cut spending in the face of [shortfalls](https://www.abc.net.au/news/2024-04-22/nsw-treasurer-daniel-mookhey-warns-budget-shock-11b-gst-hole/103751654). 
