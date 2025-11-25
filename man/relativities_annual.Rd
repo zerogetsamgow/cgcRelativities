@@ -8,10 +8,10 @@
 ## `who`
 A data frame with nrow(yearly_relativities) rows and ncol(yearly_relativities) columns:
 \describe{
-  \item{update_year}{Year of the CGC update or review the }
+  \item{update_year}{Year of the CGC update or review the data was source from.}
   \item{state_name}{The Australian State or Territory the relativity is for.}
-  \item{a}{Year}
-  \item{a}{Year}
+  \item{relativity_year}{Financial year the relativity should be applied to.}
+  \item{assess_value}{The year data used to calculate the relativity comes from.}
   ...
 }
 }
@@ -22,7 +22,6 @@ A data frame with nrow(yearly_relativities) rows and ncol(yearly_relativities) c
 relativities_annual
 }
 \description{
-A subset of data from the World Health Organization Global Tuberculosis
-Report ...
+A dataset of annual relativities calculated by the CGC
 }
 \keyword{datasets}

@@ -1,0 +1,61 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# cgcRelativities
+
+<!-- badges: start -->
+![GitHub R package version](https://img.shields.io/github/r-package/v/zerogetsamgow/cgcRelativities) 
+![GitHub last commit](https://img.shields.io/github/last-commit/zerogetsamgow/cgcRelativities) 
+<!-- badges: end -->
+
+cgcRelativities provides tidy data versions of certain data tables from the Commonwealth Grant's Commission's annual [Reports to Government](https://www.cgc.gov.au/reports-for-government).
+
+At present data on relativities and own source revenue are included in the package.
+
+## Installation
+
+You can install the development version of cgcRelativities from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("pak")
+pak::pak("zerogetsamgow/cgcRelativities")
+```
+
+## Relativities 
+Relativities data is stored in three files 
+Data is stored as 
+
+* `relativies_recommended.rda`, the actual relativities recommended by the CGC. 
+
+```{r recommended}
+recommended = cgcRelativities::relativities_recommended
+
+dplyr::glimpse(recommended)
+```
+
+* `relativies_annual.rda`, the annual relativities based on one year of assessment date used to calculate the recommendations 
+```{r annual}
+annual = cgcRelativities::relativities_annual
+
+dplyr::glimpse(annual)
+```
+
+`relativies_floorless.rda` a set of imputed relativities assumming 2018 reforms had not been implemented.
+```{r floorless}
+floorless = cgcRelativities::relativities_floorless
+
+dplyr::glimpse(floorless)
+
+```

@@ -1,27 +1,29 @@
 ---
-title: "responsiveness"
+title: "Submission in response to the Productivity Commission's Issues Paper - GST distribution reforms"
 author: "Sam Gow"
 output:
   rmarkdown::html_vignette: default
-  rmarkdown::pdf_vignette: default
 vignette: "%\\VignetteIndexEntry{responsiveness} %\\VignetteEngine{knitr::rmarkdown}
   %\\VignetteEncoding{UTF-8}\n"
 ---
 
-```{r, include = FALSE}
+```{r, include = FALSE, echo=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-```
-
-```{r setup}
+library(dplyr)
 library(cgcRelativities)
 ```
+
+## Do the 2018 GST distribution reforms strike the right balance between responding to changing
+circumstances and providing certainty around revenue?
 
 In its [Issues Paper](https://assets.pc.gov.au/2025-11/gst-reforms-issues.pdf?VersionId=YQP9pGfxnDPTIkkKhn48nGko5OncLRWw), the Productivity Commission has asked 'whether the [current approach to horizontal fiscal equalisation] strike[s] the right balance between responding to changing circumstances and providing certainty around revenue'.
 
 This submission contends that features of the CGC's methodology that aim to smooth variation in GST payments undermine the objective of horizontal fiscal equalisation and by doing so risks creating mismatches between state and territory revenue and expenditure requirements. Horizontal fiscal equalisation should aim to match revenue with expenditure needs in a given year, rather than revenue from year to year.
+
+All analysis and data in this submission is available in the [**cgcRelativities** package](https://github.com/zerogetsamgow/cgcRelativities).
 
 The CGC's current approach involves three features that aim to provide additional certainty about state and territory GST payment revenue:
 
@@ -41,14 +43,14 @@ Combined the first two features listed above result in CGC recommendations that 
 
 ### Fiscal capacity in the prior year is a better predictor than the CGC's uncronstrained recommendations
 
-```{r poor_predicter}
+```{r poor_predicter, echo=FALSE, out.height="400px", out.width="700px"}
 
 # Get last estimate of relativity for each year
 relativies_actual =
   relativities_yearly |> 
   dplyr::group_by(relativity_year , state_name) |>
   dplyr::arrange(state_name, desc(relativity_year ), desc(update_year)) |>
-  dplyr::filter(row_number()==n()) |> 
+  dplyr::filter(dplyr::row_number()==dplyr::n()) |> 
   dplyr::mutate(relativity_type = "Actual")
 
 # Get annual relativity for Prior-year
@@ -56,8 +58,8 @@ relativities_prior =
   relativities_yearly |>
   dplyr::group_by(relativity_year , state_name) |>
   dplyr::arrange(state_name, desc(relativity_year ), desc(update_year)) |>
-  dplyr::filter(row_number()==n()) |>
-  dplyr::mutate(relativity_year = relativity_year + years(1)) |>
+  dplyr::filter(dplyr::row_number()==n()) |>
+  dplyr::mutate(relativity_year = relativity_year + lubridate::years(1)) |>
   dplyr::mutate(relativity_type="Prior year") |>
   dplyr::ungroup()
 
@@ -72,27 +74,35 @@ all.relativities =
 
 # Create plot for headline chart
 all.plot =
-  ggplot(
-    all.relativities |> filter(!str_detect(state_name,"Northern|Tasmania")),
-    aes(x=relativity_year - months(6),
+  ggplot2::ggplot(
+    all.relativities |> filter(!stringr::str_detect(state_name,"Northern|Tasmania")),
+    ggplot2::aes(x=relativity_year - months(6),
         y=assess_value,
         colour=relativity_type,
         #fill=relativity_type
     )
   )+
-  geom_point(size=1,alpha=.8)+
-  facet_wrap(facets= vars(state_name), nrow=2,
-             labeller = labeller(state_name = label_wrap_gen(width = 20))) +
-  scale_x_date(name=NULL,date_labels = "%y",date_breaks="1 years",
-               limits = c(lubridate::dmy("30-9-2018"),NA))+
-  scale_y_continuous(name="Relativity")+
-  scale_colour_viridis_d(name=NULL, option="plasma")+
-  theme_minimal()+
-  theme(plot.margin=margin(0.5,0.5,0.5,0.5,"cm"),
-        legend.margin = margin(0,0,0,0,"cm"),
+  ggplot2::geom_point(size=1,alpha=.8)+
+  ggplot2::facet_wrap(facets= vars(state_name), nrow=2,
+             labeller = 
+               ggplot2::labeller(
+                 state_name = 
+                   ggplot2::label_wrap_gen(width = 20))) +
+  ggplot2::scale_x_date(
+    name=NULL,
+    date_labels = "%y",
+    date_breaks="1 years",
+    limits = c(lubridate::dmy("30-9-2018"),NA))+
+  ggplot2::scale_y_continuous(name="Relativity")+
+  ggplot2::scale_colour_viridis_d(name=NULL, option="plasma")+
+  vpstheme::theme_vps_dh(base_size = 10)+
+  ggplot2::theme(plot.margin = 
+                   ggplot2::margin(0.5,0.5,0.5,0.5,"cm"),
+        legend.margin = ggplot2::margin(0,0,0,0,"cm"),
         legend.position = "bottom",
-        plot.background = element_rect(fill = "white", colour = NULL),
-        axis.text.x=element_text(hjust=0.5))
+        plot.background = 
+          ggplot2::element_rect(fill = "white", colour = NULL),
+        axis.text.x = ggplot2::element_text(hjust=0.5))
 
 plot(all.plot)
 
@@ -100,38 +110,49 @@ plot(all.plot)
 
 Fiscal equalisation could be improved if the CGC's recommendations: \* applied in the year they are provided - that is, the recommendations made on 14 March 2025 would apply to 2024-25 payments. \* were based only on an assessment of the most recent year data is available for, rather than an average of three years. The chart above shows the relativities based on this approach as pink dots. In general, they are a better reflection of the fiscal capacity when they would apply then the current recommendations. This can be seen in the chart below, where the assessed fiscal capacity for the prior year has generally been closer to actual fiscal capacity in any given year than the CGC's recommendations.
 
-### Fiscal capacity in the prior year is a better predictor than the CGC's recommendations
+## Fiscal capacity in the prior year is a better predictor than the CGC's recommendations
 
-```{r difference_plot}
+```{r difference_plot, echo=FALSE, out.height="400px", out.width="700px"}
 
 difference.relativities =
   all.relativities |>
-  dplyr::filter(!relativity_year>ymd("2024-6-30")) |>
+  dplyr::filter(!relativity_year>
+                  lubridate::ymd("2024-6-30")) |>
   dplyr::group_by(state_name, relativity_year) |>
   dplyr::arrange(state_name, relativity_year,relativity_type) |>
   dplyr::mutate(assess_value=assess_value-first(assess_value)) |>
-  dplyr::filter(!str_detect(relativity_type,"Actual"))
+  dplyr::filter(!stringr::str_detect(relativity_type,"Actual"))
 
 difference.plot =
   ggplot2::ggplot(
     difference.relativities |>
-      dplyr::filter(!stringr::str_detect(state_name,"Northern|Tasmania")),
+      dplyr::filter(
+        !stringr::str_detect(state_name,"Northern|Tasmania")),
     ggplot2::aes(x=relativity_year - months(6),
         y=assess_value,
         colour=relativity_type,
         fill=relativity_type
     )
   )+
-  ggplot2::geom_col(position = position_identity())+
+   ggplot2::scale_x_date(
+    name=NULL,date_labels = "%y", date_breaks = "1 years",
+    limits = c(lubridate::dmy("30-6-2018"),NA))+
+   ggplot2::scale_y_continuous(name="Difference from actual capacity")+
+   ggplot2::scale_colour_viridis_d(name=NULL, option="plasma",alpha=.5)+
+   ggplot2::scale_fill_viridis_d(name=NULL, option="plasma",alpha=.5)+
+
+  ggplot2::geom_col(position = ggplot2::position_identity())+
   ggplot2::facet_wrap(facets=vars(state_name),nrow=2) +
-  ggplot2::scale_x_date(name=NULL,date_labels = "%y", date_breaks = "1 years",
+  ggplot2::scale_x_date(
+    name=NULL,date_labels = "%y", date_breaks = "1 years",
                limits = c(lubridate::dmy("30-6-2018"),NA))+
-  ggplot2::ggthemetheme_minimal()+
-  ggplot2::theme(plot.margin=margin(0.5,0.5,0,0.5,"cm"),
-        legend.margin = margin(0,0,0,0,"cm"),
+  vpstheme::theme_vps_dh(base_size = 5)+
+  ggplot2::theme(
+    plot.margin = ggplot2::margin(0.5,0.5,0,0.5,"cm"),
+    legend.margin = ggplot2::margin(0,0,0,0,"cm"),
         legend.position = "bottom",
-        legend.key.size = unit(4,"mm"),
-        axis.text.x = element_text(hjust=.5)
+        legend.key.size = ggplot2::unit(4,"mm"),
+        axis.text.x = ggplot2::element_text(hjust=.5)
 
   )
 
@@ -142,18 +163,20 @@ As shown in the table below, relativies calculated using this new method would h
 
 ### Mean difference betwen actual fiscal need relativity and recommended relativity using new method and as recommended, 2019-20 to 2024-25
 
-```{r difference_table}
+```{r difference_table, echo=FALSE, out.height="400px", out.width="700px"}
 
 difference_summary =
   difference.relativities |> 
-  filter(relativity_year>dmy("30-6-2019")) |> 
-  group_by(state_name, relativity_type) |> 
-  summarise(mean_value = round(mean(assess_value),5)) |>
-  pivot_wider(names_from = relativity_type, values_from = mean_value)
+  dplyr::filter(
+    relativity_year>lubridate::dmy("30-6-2019")) |> 
+  dplyr::group_by(state_name, relativity_type) |> 
+  dplyr::summarise(mean_value = round(mean(assess_value),5)) |>
+  tidyr::pivot_wider(
+    names_from = relativity_type, values_from = mean_value)
 
 knitr::kable(
   difference_summary |> 
-    rename("State or territory" = "state_name",
+    dplyr::rename("State or territory" = "state_name",
            "New method"= "Prior year")) |> 
   kableExtra::kable_styling() 
 
@@ -161,4 +184,58 @@ knitr::kable(
 
 If I was a state treasurer, I would prefer this outcome to the certainty provided by the current approach. There are other options for states to smooth revenue over time (borrowing and saving) or better plan for changes (improving forecasting methods) that don't detract from fiscal equalisation.
 
-There is also no evidence that increasing certainty of GST payments leads to better fiscal decision making. The evidence available suggests states and territory may spend [windfall payments](https://www.theage.com.au/national/victoria-s-spending-decision-reignites-spat-between-states-over-gst-carve-up-20250522-p5m1fs.html) or cut spending in the face of [shortfalls](https://www.abc.net.au/news/2024-04-22/nsw-treasurer-daniel-mookhey-warns-budget-shock-11b-gst-hole/103751654). 
+There is also no evidence that increasing certainty of GST payments leads to better fiscal decision making. The evidence available suggests states and territory may spend [windfall payments](https://www.theage.com.au/national/victoria-s-spending-decision-reignites-spat-between-states-over-gst-carve-up-20250522-p5m1fs.html) or cut spending in the face of [shortfalls](https://www.abc.net.au/news/2024-04-22/nsw-treasurer-daniel-mookhey-warns-budget-shock-11b-gst-hole/103751654).
+
+## Have the GST distribution arrangements since the 2018 legislative changes delivered a reasonable level
+of horizontal fiscal equalisation?
+
+In this, my second article on fixing federal financial relations, I want to explore how state tax revenue affects the GST each state receives and how changing this might feature on a path back to horizontal fiscal equalisation in Australia.
+
+In short, I want to step through a flaw in the current approach (that it compares revenue raised from current tax bases) and suggest instead that revenue raising capacity could be more simply and efficiently measured by using a macro measure (like state final demand). This would be more efficient both in terms of administrative effort required and the tax system that might arise from removing disincentives for tax reform.
+
+If you recall from my first article, the Commonwealth Grants Commission uses a ‘need’ to determine a weighting (called a relativity) that is applied to state populations to determine their share of GST.
+
+
+
+Article content
+This need reflects each state’s capacity to raise revenue and the amount each would spend to deliver similar levels of service (as well as assessments of borrowing and investment costs and Commonwealth payments other than the GST). A summary of these calculations for 2021-22 is shown below.
+
+Article content
+The importance of revenue capacity can be seen in Western Australia’s capacity. They were assessed as being able to raise nearly $3 000 per person more than any other state. Compare this to the amount of GST per person to be shared, and we see much of Western Australia’s relative fiscal strength came from revenue.
+
+In 2019, Western Australia’s fiscal strength resulted in a decision to place a floor under each states relativity of 0.700. Instead of imposing a floor, another option to address Western Australia’s declining GST share could have been to make sure assessment best reflected capacity. The ‘assessed’ that prefaces each category in the table above is an important qualifier. GST relativities are based on the CGC’s assessment of each state’s capacity to raise revenue, not the amounts they raise.
+
+I, and others, consider the current assessments to be flawed. The reasons for this view can be seen by comparting the CGC’s assessment of payroll tax revenue with actual revenue as shown below.
+
+Article content
+
+
+Your gaze might be drawn to the ACT in this chart. Not surprisingly. The ACT raises 50 per cent more revenue per person from payroll tax than the CGC assessment1. The gap between the ACT’s actual and assessed revenue reflects limits on the ACT imposing payroll tax on the largest employer in the capital, the Australian Government. As a result of these limits, the CGC considers the ACT to have a similar or smaller payroll tax base per person than most other states.
+
+So, why is the ACT’s actual revenue so much higher? Defenders of the current approach would suggest it results from a policy choice to impose a higher tax rate, not capacity. The CGC’s methodology avoids penalising jurisdictions for such choices, but, while the ACT does impose the highest payroll tax rate, this policy choice likely reflects capacity not captured in the current methodology.
+
+While payroll tax is legally imposed on employers, it is generally accepted that the economic incidence of the tax falls on workers (in the form of lower wages) and/or consumers (in the form of higher prices). ACT employers likely can’t pass the tax on to workers (they are competing with the Australian Government who don’t pay the tax after all), so it is more likely passed on to consumers in the form of higher prices.
+
+Most payroll tax in the ACT is raised from large national businesses (like the major supermarkets, banks and the big four consulting firms) who pass the cost on to ACT consumers, both residents and other businesses (including the Australian Government). They can do this as their customers have the capacity to pay - ACT residents have the highest average incomes in the country - and likely limited choice but to do so. The current methodology by looking at the size of the legal tax base fails to reflect the capacity of those who bear the cost of the tax.
+
+So, perhaps, rather than assessing capacity to raise revenue by looking at the size of existing tax bases, the CGC could be looking at other measures - like the earnings of residents. I am not the first to make this observation. This idea first came to my attention from Peter Abelson more than a decade ago. Peter later brought raised them in his submission to the Productivity Commission’s inquiry into horizontal fiscal equalisation. Peter argued state ‘revenue raising capacity is primarily a function of the real household disposable income of residents after allowances for major cost of living differences’. Assessments based on this measure would lead to much higher assessments for the ACT and Victoria and much lower estimates for Queensland and Western Australia.
+
+Apart from its novelty, I suspect a reason Peter’s very good idea failed to capture the attention of the PC and the CGC is that it would have required replacing an accepted measure with one that would require new effort to measure (and even more effort to agree on how it should be measured).
+
+As a practitioner, I have always looked for simple solutions to challenging data problems. For example, I was able to improve forecasts of GST relativities by eschewing the normal data-rich option (which requires data on every state’s revenue from each tax) and instead using the smallest possible set of data of past relativities and select forecasts. Similarly, I can see how Peter’s idea could be implemented using available data contained in the state accounts prepared by the Australian Bureau of Statistics.
+
+The chart below shows the CGC’s assessment of revenue raising capacity2 compared to a proposal to assess revenue raising capacity using only state final demand. This model assumes each state’s capacity to raise revenue is based on the size of its economy. Their capacity is then the average state revenue per dollar of gross domestic product per person multiplied by state final demand. Consistent with the discussion above, the ACT’s assessed capacity is significantly increased, as is the capacity of the Northern Territory and to a lesser extent the capacities of Victoria, South Australia and Tasmania.
+
+Article content
+The revenue ‘needs’ that arise from these two options are shown below. The changes in relative capacity result in Western Australia’s share of GST being much less affected by its revenue raising capacity, though it would still be a donor state. The amounts received by the recipient state’s would also be reduced, and in the case of the territories their revenue raising capacity would result in them being donors (though the Northern Territory’s expenditure requirements would still see it receive much more than an equal per capita share of GST).
+
+Article content
+The results of adopting this proposed approach, or any equivalent improvement to assessing revenue raising capacity, would have avoided the need to impose a floor under the GST relativities. Assessed state fiscal capacities would have been much more consistent over time and, I would argue, much more reflective of actual capacity.
+
+Finally, one other benefit of adopting an approach to assessing revenue raising capacity based on a macro measure like state final demand is that it would eliminate disincentives to tax reform that exist in the current approach. The final chart in this note shows assessed and actual stamp duty revenue, this includes stamp duty on conveyances as well as other stamp duties. The CGC continues to assess the ACT as having the capacity to raise revenue from stamp duty, which it abolished. The ACT’s capacity to raise revenue from stamp duty has increased, likely as a result of increased transactions resulting from the abolition of the tax. In this way, the current assessment discourages individual states from abolishing inefficient taxes as they would be assessed as having an increased capacity to raise revenue from that base. Assessments of revenue raising capacity based on a macro would largely overcome this issue (there would still be a smaller disincentive to the extent that state final demand per capita increased).
+
+
+
+Footnotes
+To determine a state’s capacity to raise revenue the CGC undertakes an assessment of each major revenue line. These include taxes (such as payroll tax, land tax and stamp duty), royalties and other revenue such as dividends, interest and the sale of goods and services.While the CGC uses data on the actual amount of tax collected by each state, its assessments don’t reflect those amounts. Instead the CGC determines the amount of revenue each state would raise if they applied the average policy. To do this, the CGC makes an assessment of each state’s tax base under that average policy and applies the average tax rates to that base.↩︎
+For the purposes of this chart, I have only looked at revenue from the major tax lines subject to separate assessments by the CGC. Including ‘other revenue’ to the comparison would significantly complicate the task without altering the results.↩︎

@@ -90,7 +90,7 @@ cgc.relativities.after2020 =
   group_by(update_year, state_name, relativity_year) |>
   arrange(state_name, relativity_year, desc(update_year))
 
-
+# Get annual relativities for 2020, (different sheet name and format)
 cgc.relativities.2020 =
   cgc.data |>
   filter(
@@ -162,7 +162,7 @@ relativities_annual =
 # Save for export
 usethis::use_data(relativities_annual, overwrite = TRUE)
 
-# Get recommended relativities upt to 2021-22 (before floor was introduced)
+# Get recommended relativities with floor
 relativities_recommended =
   cgc.data |>
   filter(
@@ -206,3 +206,200 @@ relativities_floorless =
 
 # Save for export
 usethis::use_data(relativities_floorless, overwrite = TRUE)
+
+
+# Get assessed revenue
+assessed_revenue_most=
+  cgc.data |>
+  filter(
+
+    update_year %in% c(2020,2022:2025),
+    str_detect(sheets,"Assessed.*revenue")
+  ) |>
+  mutate(data=pmap(list(download,sheets), readxl::read_excel, range="A2:j75", col_names = TRUE, col_types = "text"))  |>
+  unnest(data) |>
+  janitor::clean_names() |>
+  select(update_year,
+         "tax_name" = "category",
+         "financial_year",
+         nsw:nt) |>
+  pivot_longer(nsw:nt) |>
+  mutate(state_name = factor(name,levels = str_to_lower(strayr::state_abb_au),labels = strayr::state_name_au),
+         assess_value = as.numeric(value)) |>
+  select(update_year,
+         tax_name,
+         financial_year,
+         state_name,
+         assess_value) |>
+  filter(!is.na(assess_value))
+
+
+assessed_revenue_2021 =
+  cgc.data |>
+  filter(
+    str_detect(
+      file_name,
+      "Assessed Budget"),
+    update_year %in% c(2021),
+    str_detect(sheets,"Assessed.*rev")
+  ) |>
+  mutate(data=pmap(list(download,sheets), readxl::read_excel, range="A3:j75", col_names = TRUE, col_types = "text"))  |>
+  unnest(data) |>
+  janitor::clean_names() |>
+  select(update_year,
+         "tax_name" = "category",
+         "financial_year",
+         nsw:nt) |>
+  pivot_longer(nsw:nt) |>
+  mutate(state_name = factor(name,levels = str_to_lower(strayr::state_abb_au),labels = strayr::state_name_au),
+         assess_value = as.numeric(value)) |>
+  select(update_year,
+         tax_name,
+         financial_year,
+         state_name,
+         assess_value) |>
+  filter(!is.na(assess_value))
+
+
+
+assessed_revenue_pre_2020 =
+  cgc.data |>
+  filter(
+    str_detect(
+      file_name,
+      "Assessed Budget"),
+    update_year %in% c(2015:2019),
+    str_detect(sheets,"Assessed.*rev")
+  ) |>
+  mutate(data=pmap(list(download,sheets), readxl::read_excel, range="A2:j75", col_names = TRUE, col_types = "text"))  |>
+  unnest(data) |>
+  janitor::clean_names() |>
+  mutate(tax_name = str_extract(x1,"[A-z]*\\s((t|T)ax|duty|revenue)")) |>
+  fill(tax_name) |>
+  filter(x1!=tax_name,!is.na(nsw)) |>
+  select(
+    sheets,
+    update_year,
+    tax_name,
+    "financial_year" = "x1",
+    nsw:nt
+  ) |>
+  pivot_longer(nsw:nt) |>
+  mutate(state_name = factor(name,levels = str_to_lower(strayr::state_abb_au),labels = strayr::state_name_au),
+         assess_value = as.numeric(value)) |>
+  select(update_year,
+         tax_name,
+         financial_year,
+         state_name,
+         assess_value)
+
+assessed_revenue =
+  bind_rows(
+    assessed_revenue_pre_2020,
+    assessed_revenue_2021,
+    assessed_revenue_most
+  ) |>
+  mutate(tax_name = str_replace(tax_name,"^assessed","Total assessed"),
+         tax_name = str_replace(tax_name,"Stamp duty.*","Stamp duty"),
+         tax_name = str_replace(tax_name,"Motor tax(es)","Motor tax"))
+
+# Save for export
+usethis::use_data(assessed_revenue, overwrite = TRUE)
+
+# Get actual revenue
+actual_revenue_most =
+  cgc.data |>
+  filter(
+    str_detect(
+      file_name,
+      "Adjusted Budget"),
+    update_year %in% c(2020,2022:2025),
+    str_detect(sheets,"Own.*revenue")
+  ) |>
+  mutate(data=pmap(list(download,sheets), readxl::read_excel, range="A3:j75", col_names = TRUE, col_types = "text"))  |>
+  unnest(data) |>
+  janitor::clean_names() |>
+  select(update_year,
+         "tax_name" = "category",
+         "financial_year",
+         nsw:nt) |>
+  fill(tax_name) |>
+  pivot_longer(nsw:nt) |>
+  mutate(state_name = factor(name,levels = str_to_lower(strayr::state_abb_au),labels = strayr::state_name_au),
+         actual_value = as.numeric(value)) |>
+  select(update_year,
+         tax_name,
+         financial_year,
+         state_name,
+         actual_value) |>
+  filter(!is.na(actual_value))
+
+actual_revenue_2021 =
+  cgc.data |>
+  filter(
+    str_detect(
+      file_name,
+      "Adjusted Budget"),
+    update_year %in% c(2021),
+    str_detect(sheets,"Assessed.*rev")
+  ) |>
+  mutate(data=pmap(list(download,sheets), readxl::read_excel, range="A3:j75", col_names = TRUE, col_types = "text"))  |>
+  unnest(data) |>
+  janitor::clean_names() |>
+  select(update_year,
+         "tax_name" = "category",
+         "financial_year",
+         nsw:nt) |>
+  pivot_longer(nsw:nt) |>
+  mutate(state_name = factor(name,levels = str_to_lower(strayr::state_abb_au),labels = strayr::state_name_au),
+         actual_value = as.numeric(value)) |>
+  select(update_year,
+         tax_name,
+         financial_year,
+         state_name,
+         actual_value) |>
+  filter(!is.na(actual_value))
+
+actual_revenue_pre_2020 =
+  cgc.data |>
+  filter(
+    str_detect(
+      file_name,
+      "Adjusted Budget"),
+    update_year %in% c(2015:2019),
+    str_detect(sheets,"Own.*rev")
+  ) |>
+  mutate(data=pmap(list(download,sheets), readxl::read_excel, range="A2:j75", col_names = TRUE, col_types = "text"))  |>
+  unnest(data) |>
+  janitor::clean_names() |>
+  mutate(tax_name = str_extract(x1,"[A-z]*\\s((t|T)ax|duty|revenue)")) |>
+  fill(tax_name) |>
+  filter(x1!=tax_name,!is.na(nsw)) |>
+  select(
+    sheets,
+    update_year,
+    tax_name,
+    "financial_year" = "x1",
+    nsw:nt
+  ) |>
+  pivot_longer(nsw:nt) |>
+  mutate(state_name = factor(name,levels = str_to_lower(strayr::state_abb_au),labels = strayr::state_name_au),
+         actual_value = as.numeric(value)) |>
+  select(update_year,
+         tax_name,
+         financial_year,
+         state_name,
+         actual_value)
+
+actual_revenue =
+  bind_rows(
+    actual_revenue_pre_2020,
+    actual_revenue_2021,
+    actual_revenue_most
+  ) |>
+  mutate(tax_name = str_replace(tax_name,"^assessed","Total assessed"),
+         tax_name = str_replace(tax_name,"Stamp duty.*","Stamp duty"),
+         tax_name = str_replace(tax_name,"Motor tax(es)","Motor tax"))
+
+# Save for export
+usethis::use_data(actual_revenue, overwrite = TRUE)
