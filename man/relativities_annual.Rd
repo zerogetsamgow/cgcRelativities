@@ -5,13 +5,14 @@
 \alias{relativities_annual}
 \title{Annual relativities}
 \format{
-## `who`
-A data frame with nrow(yearly_relativities) rows and ncol(yearly_relativities) columns:
+## `cgc`
+A data frame with nrow(relativities_annual) rows and ncol(relativities_annual) columns:
 \describe{
   \item{update_year}{Year of the CGC update or review the data was source from.}
   \item{state_name}{The Australian State or Territory the relativity is for.}
-  \item{relativity_year}{Financial year the relativity should be applied to.}
-  \item{assess_value}{The year data used to calculate the relativity comes from.}
+  \item{financial_year}{Financial year data used to calculate the relativity was drawn from.}
+  \item{relativity}{The annual per capita relativity for that year as assessed by the CGC.}
+  \item{relativity_type}{The type of relativity `annual` to diffentiate from averaged recommended relativities.}
   ...
 }
 }
@@ -22,6 +23,6 @@ A data frame with nrow(yearly_relativities) rows and ncol(yearly_relativities) c
 relativities_annual
 }
 \description{
-A dataset of annual relativities calculated by the CGC
+A dataset of annual relativities for each assessment year calculated by the CGC.
 }
 \keyword{datasets}

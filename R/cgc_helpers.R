@@ -7,13 +7,12 @@
 #' @rdname get_cgc_files
 
 #' @importFrom rvest read_html
-#' @importFrom rvest read_elements
+#' @importFrom rvest html_elements
 #' @importFrom rvest html_attr
 #' @importFrom curl curl
 #' @importFrom tibble as_tibble_col
 
 #' @export
-
 get_cgc_files = function(url) {
   temp.tbl =
     url |>
@@ -34,7 +33,7 @@ get_cgc_files = function(url) {
 #' @rdname download_cgc
 
 #' @importFrom rvest read_html
-#' @importFrom rvest read_elements
+#' @importFrom rvest html_elements
 #' @importFrom rvest html_attr
 #' @importFrom curl curl
 #' @importFrom tibble as_tibble_col
