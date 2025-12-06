@@ -37,10 +37,11 @@ get_cgc_files = function(url) {
 #' @importFrom rvest html_attr
 #' @importFrom curl curl
 #' @importFrom tibble as_tibble_col
+#' @importFrom utils download.file
 
 #' @export
 download_cgc = function(url,destination) {
-  if(!file.exists(destination)) download.file(
+  if(!file.exists(destination)) utils::download.file(
     url,
     destination,
     method = "curl",
