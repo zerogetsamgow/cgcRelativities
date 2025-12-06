@@ -106,6 +106,24 @@
 "revenue_gfs"
 
 
+#' GFS expenses
+#'
+#' A dataset of the ABS's estimates of state expenditure
+#'
+#' @format ## `abs`
+#' A data frame with nrow(revenue_assessed) rows and ncol(revenue_assessed) columns:
+#' \describe{
+#'   \item{gfs_category}{The type of measure `expenses` to diffentiate from expenses.}
+#'   \item{gfs_subcategory}{The GFS `expenses` category.}
+#'   \item{state_name}{The Australian State or Territory the estimate is for.}
+#'   \item{financial_year}{Financial year the estimate is for.}
+#'   \item{value}{The estimated value.}
+#'   ...
+#' }
+#' @source <https://www.abs.gov.au/statistics/economy/government/government-finance-statistics-annual/>
+"expenses_gfs"
+
+
 
 
 #' GFS Taxation

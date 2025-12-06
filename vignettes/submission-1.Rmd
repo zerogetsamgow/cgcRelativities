@@ -1,10 +1,11 @@
 ---
-title: "submission"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{submission}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+title: "Submission in response to the Productivity Commission's Issues Paper - GST
+  distribution reforms"
+author: "Sam Gow"
+fontfamily: cantarell
+fontsize: 11pt
+vignette: "%\\VignetteIndexEntry{submission} %\\VignetteEngine{knitr::rmarkdown}
+  %\\VignetteEncoding{UTF-8}\n"
 ---
 
 ```{r, include = FALSE, echo = FALSE}

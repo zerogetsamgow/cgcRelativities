@@ -10,7 +10,7 @@ download_cgc(url, destination)
 \item{url}{a (character) string containing a url corresponding to the data page
 for a CGC update or review.}
 
-\item{download}{a (character) string corresponding to destination file in ./data-raw}
+\item{destination}{a (character) string corresponding to destination file in ./data-raw}
 }
 \description{
 Download CGC files related to a particular update

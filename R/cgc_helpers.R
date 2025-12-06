@@ -28,7 +28,7 @@ get_cgc_files = function(url) {
 #'
 #' @param url a (character) string containing a url corresponding to the data page
 #' for a CGC update or review.
-#' @param download a (character) string corresponding to destination file in ./data-raw
+#' @param destination a (character) string corresponding to destination file in ./data-raw
 #'
 #' @rdname download_cgc
 
@@ -40,7 +40,7 @@ get_cgc_files = function(url) {
 #' @importFrom utils download.file
 
 #' @export
-download_cgc = function(url,destination) {
+download_cgc = function(url, destination) {
   if(!file.exists(destination)) utils::download.file(
     url,
     destination,
