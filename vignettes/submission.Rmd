@@ -2,16 +2,19 @@
 title: "Submission in response to the Productivity Commission's Issues Paper - GST distribution reforms"
 author: "Sam Gow"
 output:
-  pdf_document
+  pdf_document:
+    latex_engine: xelatex
+fontfamily: cantarell
+fontsize: 11pt
 vignette: "%\\VignetteIndexEntry{responsiveness} %\\VignetteEngine{knitr::rmarkdown}
   %\\VignetteEncoding{UTF-8}\n"
 ---
 
-```{r, include = FALSE, echo=FALSE}
+```{r, include = FALSE, echo = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  out.width = "90%"
+  out.width = "100%"
 )
 library(dplyr)
 library(cgcRelativities)
@@ -25,11 +28,11 @@ This submission responds to two questions asked by the Productivity Commission i
 
 -   Have the GST distribution arrangements since the 2018 legislative changes delivered a reasonable level of horizontal fiscal equalisation?
 
-In summary, this submission contends that the answer to both these questions is 'no, the methods used to achieve horizontal fiscal equalisation could be improved'.
+In summary, this submission contends that the answer to both questions is 'no, the methods used to achieve horizontal fiscal equalisation could be improved'.
 
-All analysis in this document can be accessed at<https://github.com/zerogetsamgow/cgcRelativities>. The R package at this link provides CGC data in tidy formats and code example code to tidy data contained in the CGC's update data releases that the Productivity Commission may find useful for its own analysis.
+All analysis in this document can be accessed at <https://github.com/zerogetsamgow/cgcRelativities>. The R package available at this link provides CGC data in tidy formats (and example code to tidy data contained in the CGC's update releases) the Productivity Commission may find useful for its own analysis.
 
-## Do the 2018 GST distribution reforms strike the right balance between responding to changing circumstances and providing certainty around revenue?
+### Do the 2018 GST distribution reforms strike the right balance between responding to changing circumstances and providing certainty around revenue?
 
 In its [Issues Paper](https://assets.pc.gov.au/2025-11/gst-reforms-issues.pdf?VersionId=YQP9pGfxnDPTIkkKhn48nGko5OncLRWw), the Productivity Commission asked 'whether the [current approach to horizontal fiscal equalisation] strike[s] the right balance between responding to changing circumstances and providing certainty around revenue'.
 
@@ -37,14 +40,15 @@ This submission contends the CGC's attempts to smooth variation in GST payments 
 
 The CGC's current approach involves three features that aim to provide additional certainty about state and territory GST payment revenue:
 
--   recommended relativities are provided prior to the commencement of the year they apply - by providing its recommendations for 2025-26 before the start of that year, the CGC reduces uncertainty about how much each state will receive when they are preparing their 2025-26 budgets (some uncertainty remain as the total amount of GST and the populations used for calculating payments aren't settled until the second half of 2026). However, by doing so the CGC must use data further removed from the year they will apply.
--   the recommended relativities (prior to any application of a floor) average the CGC's assessment of state fiscal capacity in three previous years known as annual 'relativities'. Averaging over three years smooth variations in the series of recommended relativities. For 2025-26, the recommended relativies averaged the CGC's assessment of state fiscal capacities in 2023-24, 2022-23, and 2021-22. \*since 2022-23, the CGC's recommendation have limited by a floor initially set at 0.70 in 2022-23 then increased to 0.75 from 2024-25.[^1]
+-   recommended relativities are provided prior to the commencement of the year they apply - by providing its recommendations for 2025-26 before the start of that year, the CGC reduces uncertainty about how much each state will receive when they are preparing their 2025-26 budgets (some uncertainty remain as the total amount of GST and the population estimates used to calculate payments won't be determined until the second half of 2026). However, by doing so the CGC must base its assessments of fiscal capacity and need on data further removed from the year they will apply.
+-   the recommended relativities (prior to any application of a floor) average the CGC's assessment of state fiscal capacity in three previous years known as 'annual relativities'. Averaging over three years smoothes variations in the series of recommended relativities. For 2025-26, the recommended relativies averaged the CGC's assessment of state fiscal capacities in 2023-24, 2022-23, and 2021-22.
+-   since 2022-23, the CGC's recommendation have limited by a floor initially set at 0.70 in 2022-23 then increased to 0.75 from 2024-25.[^1]
 
 [^1]: This submission does not deal with the latter feature which is clearly flawed and is likely to be the subject of multiple submissions that will make strong arguments for its removal.
 
 By making the GST payments more predictable in this way, the CGC is making them less effective in equalising fiscal capacity. However, the case for reducing uncertainty is unclear. State budgets are also affected by many other sources of uncertainty. State treasurer's may be more certain about the amount of GST payments they will receive, but overall this approach results in the risk of them not having the fiscal capacity in a given year to provide the average level of services.
 
-For example, if a state's revenue raising capacity drops between the assessment period and the application year, they won't receive enough GST to cover this shortfall. As such, increasing certainty about GST payments at the expense of equalising fiscal capacity is likely to make budgeting harder, not easier.
+For example, if a state's revenue raising capacity drops between the assessment period and the application year, the GST payment calculated using the CGC's current methodology will result in them having insufficient fiscal capacity to fund services at the average level. As such, increasing certainty about GST payments comes at the expense of equalising fiscal capacity and is likely to make budgeting harder, not easier.
 
 This submission argues that increasing the predictability of GST payments to the states should be treated as a secondary consideration to the CGC's principal objective - fiscal equalisation - if not abandoned altogether.
 
@@ -52,7 +56,7 @@ Combined the first two features listed above result in CGC recommendations that 
 
 ### Different approaches to calculating relativities
 
-```{r poor_predicter, echo=FALSE}
+```{r poor_predicter, echo = FALSE}
 
 # Get last estimate of relativity for each year
 relativies_actual =
@@ -82,42 +86,40 @@ all.relativities =
   ) 
 
 # Create plot for headline chart
-suppressWarnings(
-  ggplot2::ggplot(
-    all.relativities |> filter(!stringr::str_detect(state_name,"Northern|Tasmania")),
-    ggplot2::aes(x=financial_year - months(6),
-        y=relativity,
-        colour=relativity_type,
-        fill=relativity_type
-    )
-  )+
+
+ggplot2::ggplot(
+  all.relativities |> 
+    filter(!stringr::str_detect(state_name,"Northern|Tasmania")),
+  ggplot2::aes(
+    x = financial_year - months(6),
+    y = relativity,
+    colour = relativity_type,
+    fill = relativity_type))+
   ggplot2::geom_point(size=1,alpha=.8)+
-  ggplot2::facet_wrap(facets= vars(state_name), nrow=2,
-             labeller = 
-               ggplot2::labeller(
-                 state_name = 
-                   ggplot2::label_wrap_gen(width = 20)),
-             axes = "all_y") +
+  ggplot2::facet_wrap(
+    facets = vars(state_name), nrow=2,
+    labeller =
+      ggplot2::labeller(
+        state_name =
+          ggplot2::label_wrap_gen(width = 20)),
+    axes = "all_y") +
   ggplot2::scale_x_date(
     name=NULL,
     date_labels = "%y",
-    date_breaks="1 years",
-    )+
-  ggplot2::coord_cartesian(xlim = c(lubridate::dmy("30-9-2018"),NA)) +
-  ggplot2::scale_y_continuous(name="Relativity")+
-  ggplot2::scale_colour_viridis_d(name=NULL, option="plasma")+
-  ggplot2::scale_fill_viridis_d(name=NULL, option="plasma")+
-  vpstheme::theme_vps_dh(base_size = 10)+
+    date_breaks="1 years")+
+  ggplot2::coord_cartesian(
+   xlim = c(lubridate::dmy("30-9-2018"),NA)) +
+  ggplot2::scale_y_continuous(
+    name="Relativity")+
+  ggplot2::scale_colour_viridis_d(
+    name=NULL, option="plasma")+
+  ggplot2::scale_fill_viridis_d(
+    name=NULL, option="plasma")+
+  vpstheme::theme_vps_dh(
+    base_size = 8)+
   ggplot2::labs(
     caption = "Tasmania and Northern Territory omitted for legibility.") +
-  ggplot2::theme(plot.margin = 
-                   ggplot2::margin(0.5,0.5,0.5,0.5,"cm"),
-        legend.margin = ggplot2::margin(0,0,0,0,"cm"),
-        legend.position = "bottom",
-        plot.background = 
-          ggplot2::element_rect(fill = "white", colour = NULL),
-        axis.text.x = ggplot2::element_text(hjust=0.5))
-)
+  ggplot2::theme(axis.text.x = ggplot2::element_text(hjust=0.5))
 ```
 
 Fiscal equalisation could be improved if the CGC's recommendations:
@@ -130,7 +132,7 @@ The chart above shows the relativities based on this approach as pink dots. In g
 
 ### Fiscal capacity in the prior year is a better predictor than the CGC's recommendations
 
-```{r difference_plot, echo=FALSE}
+```{r difference_plot, echo = FALSE}
 
 difference.relativities =
   all.relativities |>
@@ -141,34 +143,31 @@ difference.relativities =
   dplyr::mutate(relativity=relativity-first(relativity)) |>
   dplyr::filter(!stringr::str_detect(relativity_type,"Actual"))
 
-suppressWarnings(
-  ggplot2::ggplot(
-    difference.relativities |>
-      dplyr::filter(
-        !stringr::str_detect(state_name,"Northern|Tasmania")),
-    ggplot2::aes(x=financial_year - months(6),
-        y=relativity,
-        colour=relativity_type,
-        fill=relativity_type)
-    )+
-    ggplot2::geom_col(position = ggplot2::position_identity())+
-    ggplot2::scale_x_date(
-      name=NULL,date_labels = "%y", date_breaks = "1 years") +
-    ggplot2::coord_cartesian(xlim = c(lubridate::dmy("30-6-2018"),NA)) + 
-    ggplot2::scale_y_continuous(name="Difference from actual capacity")+
-    ggplot2::scale_colour_viridis_d(name=NULL, option="plasma",alpha=.5)+
-    ggplot2::scale_fill_viridis_d(name=NULL, option="plasma",alpha=.5)+
-    ggplot2::facet_wrap(facets=vars(state_name),nrow=2) +
-      ggplot2::labs(
-      caption = "Tasmania and Northern Territory omitted for consistency.") +
-    vpstheme::theme_vps_dh(base_size = 10)+
-    ggplot2::theme(
-      plot.margin = ggplot2::margin(0.5,0.5,0,0.5,"cm"),
-      legend.margin = ggplot2::margin(0,0,0,0,"cm"),
-      legend.position = "bottom",
-      legend.key.size = ggplot2::unit(4,"mm"),
-      axis.text.x = ggplot2::element_text(hjust=.5))
-)
+
+ggplot2::ggplot(
+  difference.relativities |>
+    dplyr::filter(
+      !stringr::str_detect(state_name,"Northern|Tasmania")),
+  ggplot2::aes(
+    x = financial_year - months(6),
+    y = relativity,
+    colour = relativity_type,
+    fill = relativity_type))+
+  ggplot2::geom_col(position = ggplot2::position_identity())+
+  ggplot2::scale_x_date(
+    name=NULL,
+    date_labels = "%y", 
+    date_breaks = "1 years") +
+  ggplot2::coord_cartesian(
+    xlim = c(lubridate::dmy("30-6-2018"),NA)) + 
+  vpstheme::scale_y_continuvps(name="Difference from actual capacity")+
+  ggplot2::scale_colour_viridis_d(name=NULL, option="plasma",alpha=.5)+
+  ggplot2::scale_fill_viridis_d(name=NULL, option="plasma",alpha=.5)+
+  ggplot2::facet_wrap(facets=vars(state_name),nrow=2) +
+  ggplot2::labs(
+    caption = "Tasmania and Northern Territory omitted for consistency.") +
+  vpstheme::theme_vps_dh(base_size = 8)+
+  ggplot2::theme( axis.text.x = ggplot2::element_text(hjust=.5))
 ```
 
 As shown in the table below, relativities calculated using this method would have been closer on average to actual fiscal requirements in the year of application than the current approach for most states and territories over the period 2019-20 to 2024-25.
@@ -180,7 +179,7 @@ As shown in the table below, relativities calculated using this method would hav
 difference_summary =
   difference.relativities |> 
   dplyr::filter(
-    financial_year>lubridate::dmy("30-6-2019")) |> 
+    financial_year>lubridate::dmy("30-6-2018")) |> 
   dplyr::group_by(state_name, relativity_type) |> 
   dplyr::summarise(mean_value = round(mean(relativity),5),.groups = 'drop') |>
   tidyr::pivot_wider(
@@ -231,7 +230,7 @@ I, and others, consider the current assessments to be flawed. The reasons for th
 
 ### Payroll tax revenue per capita, actual versus assessed
 
-```{r payroll, echo=FALSE}
+```{r payroll, echo = FALSE}
 payroll_per_capita =
   bind_rows(
     taxation_gfs |> 
@@ -276,10 +275,13 @@ ggplot2::ggplot(
     date_breaks="1 years",
     )+
   ggplot2::coord_cartesian(
-    xlim = c(lubridate::dmy("30-9-2015"),NA),
+    xlim = c(lubridate::dmy("30-9-2018"),NA),
     ylim = c(0,2000)) +
-  ggplot2::scale_y_continuous(name="Revenue per capita, $ 000s", )+
-  vpstheme::theme_vps_dh(base_size = 10)
+  vpstheme::scale_y_continuvps(
+    name="Revenue per capita, $ 000s", 
+    labels = scales::label_number(scale = 1/1e3))+
+  ggplot2::guides(linetype = ggplot2::guide_legend(keywidth = 2)) +
+  vpstheme::theme_vps_dh(base_size = 8)
 ```
 
 Your gaze might be drawn to the ACT in this chart. Not surprisingly. The ACT raises 50 per cent more revenue per person from payroll tax than the CGC assessment1. The gap between the ACT’s actual and assessed revenue reflects limits on the ACT imposing payroll tax on the largest employer in the capital, the Australian Government. As a result of these limits, the CGC considers the ACT to have a similar or smaller payroll tax base per person than most other states.
@@ -295,8 +297,6 @@ So, perhaps, rather than assessing capacity to raise revenue by looking at the s
 Apart from its novelty, I suspect a reason Peter’s very good idea failed to capture the attention of the PC and the CGC is that it would have required replacing an accepted measure with one that would require new effort to measure (and even more effort to agree on how it should be measured).
 
 As a practitioner, I have always looked for simple solutions to challenging data problems. For example, I was able to improve forecasts of GST relativities by eschewing the normal data-rich option (which requires data on every state’s revenue from each tax) and instead using the smallest possible set of data of past relativities and select forecasts. Similarly, I can see how Peter’s idea could be implemented using available data contained in the state accounts prepared by the Australian Bureau of Statistics.
-
-The chart below shows the CGC’s assessment of revenue raising capacity compared to a proposal to assess revenue raising capacity using only state final demand. This model assumes each state’s capacity to raise revenue is based on the size of its economy. Their capacity is then the average state revenue per dollar of gross domestic product per person multiplied by state final demand. Consistent with the discussion above, the ACT’s assessed capacity is significantly increased, as is the capacity of the Northern Territory and to a lesser extent the capacities of Victoria, South Australia and Tasmania.
 
 ```{r revenue_capacity, include = FALSE}
 # Assessed revenue data and clean to get total per capita
@@ -367,25 +367,26 @@ capacity_comparison =
 
 ### State and territory capacity to raise revenue under different methods
 
-```{r capacity_plot}
-suppressWarnings(
-  ggplot2::ggplot(
-    data = capacity_comparison,
-    ggplot2::aes(
-      x = financial_year,
-      y = capacity, 
-      colour = state_name,
-      linetype = name
-    )
-  ) +
+```{r capacity_plot, echo = FALSE}
+
+ggplot2::ggplot(
+  data = capacity_comparison,
+  ggplot2::aes(
+    x = financial_year,
+    y = capacity, 
+    colour = state_name,
+    linetype = name
+  )) +
   ggplot2::geom_line() +
   ggplot2::scale_linetype_manual(
      name = NULL,
      values = c("Current"=1,"Proposed"=2))+
-   ggplot2::facet_wrap(facets= vars(state_name), nrow=2,
-             labeller = 
-               ggplot2::labeller(
-                 state_name = 
+   ggplot2::facet_wrap(
+     facets= vars(state_name),
+     nrow=2,
+     labeller = 
+       ggplot2::labeller(
+         state_name = 
                    ggplot2::label_wrap_gen(width = 20)),
              axes = "all_y") +
   ggplot2::scale_colour_manual(
@@ -394,134 +395,126 @@ suppressWarnings(
   ggplot2::scale_x_date(
     name=NULL,
     date_labels = "%y",
-    date_breaks="1 years",
-    limits = c(lubridate::dmy("30-9-2017"),NA))+
-  ggplot2::scale_y_continuous(
-    name="Revenue per capita, $000s",
-    limits = c(0,15000)
-    )+
-  vpstheme::theme_vps_dh(base_size = 10)+
-  ggplot2::theme(plot.margin = 
-                   ggplot2::margin(0.5,0.5,0.5,0.5,"cm"),
-        legend.margin = ggplot2::margin(0,0,0,0,"cm"),
-        legend.position = "bottom",
-        plot.background = 
-          ggplot2::element_rect(fill = "white", colour = NULL),
-        axis.text.x = ggplot2::element_text(hjust=0.5))
-)
+    date_breaks="1 years")+
+  vpstheme::scale_y_continuvps(
+    name="Revenue per capita, $ 000s", 
+    labels = scales::label_number(scale = 1/1e3))+
+  ggplot2::coord_cartesian(
+    ylim = c(0,15000), 
+    xlim = c(lubridate::dmy("30-9-2018"),NA)) +
+  ggplot2::guides(linetype = ggplot2::guide_legend(keywidth = 2)) +
+  vpstheme::theme_vps_dh(base_size = 8) +
+  ggplot2::theme(axis.text.x = ggplot2::element_text(hjust=0.5))
 
 ```
 
-The revenue ‘needs’ that arise from these two options are shown below. The changes in relative capacity results in Western Australia’s share of GST being less affected by its revenue raising capacity, though it would still be a donor state. The amounts received by the recipient state’s would also be reduced, and in the case of the territories their revenue raising capacity would result in them being donors (though the Northern Territory’s expenditure requirements would still see it receive much more than an equal per capita share of GST).
+The chart aboveshows the CGC’s assessment of revenue raising capacity compared to a proposal to assess revenue raising capacity using only state final demand. This model assumes each state’s capacity to raise revenue is based on the size of its economy. Their capacity is then the average state revenue per dollar of gross domestic product per person multiplied by state final demand. Consistent with the discussion above, the ACT’s assessed capacity is significantly increased, as is the capacity of the Northern Territory and to a lesser extent the capacities of Victoria, South Australia and Tasmania.
+
+The revenue ‘needs’ that arise from these two options are shown below. The changes in relative capacity results in Western Australia’s share of GST being less affected by its revenue raising capacity, though it would still be a donor state. The amounts received by the recipient state’s would also be reduced, and in the case of the territories their revenue raising capacity would result in them going from requiring additional GST payments to make up for a lack of revenue raising capacity to being donors (though the Northern Territory’s expenditure requirements would still see it receive much more than an equal per capita share of GST).
 
 ### Comparison of GST revenue needs based on different revenue assessment methods
 
-```{r revenue_need}
-suppressWarnings(
-  ggplot2::ggplot(
-    data = capacity_comparison,
-    ggplot2::aes(
-      x = financial_year,
-      y = need, 
-      colour = state_name,
-      linetype = name
-    )
-  ) +
+```{r revenue_need, echo = FALSE}
+ggplot2::ggplot(
+  data = capacity_comparison,
+  ggplot2::aes(
+    x = financial_year,
+    y = need, 
+    colour = state_name,
+    linetype = name)) +
   ggplot2::geom_line() +
-  ggplot2::geom_hline(yintercept = 0, colour = vpstheme::bv.charcoal, linewidth = .4)+
+  ggplot2::geom_hline(
+    yintercept = 0,
+    colour = vpstheme::bv.charcoal, 
+    linewidth = .4)+
   ggplot2::scale_linetype_manual(
      name = NULL,
      values = c("Current"=1,"Proposed"=2))+
-   ggplot2::facet_wrap(facets= vars(state_name), nrow=2,
-             labeller = 
-               ggplot2::labeller(
-                 state_name = 
-                   ggplot2::label_wrap_gen(width = 20)),
-             axes = "all_y") +
+   ggplot2::facet_wrap(
+     facets = vars(state_name), nrow=2,
+     labeller = 
+       ggplot2::labeller(
+         state_name = 
+           ggplot2::label_wrap_gen(width = 20)),
+     axes = "all_y") +
   ggplot2::scale_colour_manual(
     guide = 'none',
-    values=strayr::palette_state_name_2016,name=NULL)+
+    values = strayr::palette_state_name_2016,name=NULL)+
   ggplot2::scale_x_date(
-    name=NULL,
+    name = NULL,
     date_labels = "%y",
-    date_breaks="1 years",
-    limits = c(lubridate::dmy("30-9-2017"),NA))+
-  ggplot2::scale_y_continuous(
-    name="Revenue per capita, $000s",
-   limits = c(-5.5e3,5e3)
+    date_breaks = "1 years",
     )+
-  vpstheme::theme_vps_dh(base_size = 10)+
-  ggplot2::theme(plot.margin = 
-                   ggplot2::margin(0.5,0.5,0.5,0.5,"cm"),
-        legend.margin = ggplot2::margin(0,0,0,0,"cm"),
-        legend.position = "bottom",
-        plot.background = 
-          ggplot2::element_rect(fill = "white", colour = NULL),
-        axis.text.x = ggplot2::element_text(hjust=0.5))
-)
-
+  vpstheme::scale_y_continuvps(
+    name="Revenue per capita, $000s", 
+    labels = scales::label_number(scale = 1/1e3))+
+  ggplot2::coord_cartesian(
+    xlim = c(lubridate::dmy("30-9-2018"),NA),
+    ylim = c(-5.5e3,5e3) )+
+  ggplot2::guides(linetype = ggplot2::guide_legend(keywidth = 2)) +
+  vpstheme::theme_vps_dh(base_size = 8) +
+  ggplot2::theme(axis.text.x = ggplot2::element_text(hjust=0.5))
 ```
 
 The results of adopting this proposed approach, or any equivalent improvement to assessing revenue raising capacity, would have reduced the need to impose a floor under the GST relativities. Assessed state fiscal capacities would have been much more consistent over time and, I would argue, much more reflective of actual capacity.
 
-Finally, one other benefit of adopting an approach to assessing revenue raising capacity based on a macro measure like state final demand is that it would eliminate disincentives to tax reform that exist in the current approach. The final chart in this note shows assessed and actual stamp duty revenue, this includes stamp duty on conveyances as well as other stamp duties. The CGC continues to assess the ACT as having the capacity to raise revenue from stamp duty, which it abolished. The ACT’s capacity to raise revenue from stamp duty has increased, likely as a result of increased transactions resulting from the abolition of the tax. In this way, the current assessment discourages individual states from abolishing inefficient taxes as they would be assessed as having an increased capacity to raise revenue from that base. Assessments of revenue raising capacity based on a macro would largely overcome this issue (there would still be a smaller disincentive to the extent that state final demand per capita increased).
+Finally, one other benefit of adopting an approach to assessing revenue raising capacity based on a macro measure like state final demand is that it would eliminate disincentives to tax reform that exist in the current approach. Abolition of stamp duty is seen as an important economic reform. However, the current assessment methodology discourages individual states from abolishing inefficient taxes as they would continue to be assessed as having capacity to raise revenue from the stamp duty base and risk their assessed capacity increasing as transactions of properties would increase in volume without the tax.
 
-### Payroll tax revenue per capita, actual versus assessed
+The final chart in this note shows assessed and actual stamp duty revenue, this includes stamp duty on conveyances as well as other stamp duties. It shows the effect of the current method in the assessment of the Australian Capital Territory's revenue exceeding actual revenue. The Australian Capital Territory is in the process of abolishing stamp duty, but this is ignored by the CGC. Assessments of revenue raising capacity based on a macro measures like that proposed above would largely overcome this issue (there would still be a smaller disincentive to the extent that state final demand per capita increased). To the extent that it does, then it may help to unlock some barriers to productivity enhancing tax reform.
 
-```{r stamp_duty}
+### Stamp duty revenue per capita, actual versus assessed
+
+```{r stamp_duty, echo = FALSE}
 # Get data
 stamp_per_capita =
   bind_rows(
     taxation_gfs |> 
-     filter(stringr::str_detect(revenue_name,"Stamp")),
+     filter(
+       stringr::str_detect(revenue_name,"Stamp")),
     revenue_assessed |> 
-      filter(stringr::str_detect(revenue_name,"Stamp")) |> 
-      group_by(financial_year, state_name, revenue_name, revenue_type) |> 
+      filter(
+        stringr::str_detect(revenue_name,"Stamp")) |> 
+      group_by(
+        financial_year, state_name, revenue_name, revenue_type) |> 
       arrange(
-        financial_year, state_name, revenue_name, revenue_type, desc(update_year)) |> 
-      slice_head(n=1)
-  ) |> 
+        financial_year, state_name, revenue_name, 
+        revenue_type, desc(update_year))|> 
+      slice_head(n = 1)
+    ) |> 
   left_join(population_erp, by = join_by("state_name","financial_year")) |>
-  mutate(
-    per_capita = (1e6*revenue)/population
-  )
-# Plot
-suppressWarnings(
-  ggplot2::ggplot(
-    data = payroll_per_capita  |>
-      filter(!stringr::str_detect(state_name,"Northern|Tasmania")),
-    ggplot2::aes(
-      x = financial_year,
-      y = per_capita,
-      colour = state_name,
-      linetype = revenue_type)
-    ) + 
-   ggplot2::geom_line() +
-   ggplot2::scale_linetype_manual(
-     name = NULL,
-     values = c("Actual"=1,"Assessed"=2))+
-   ggplot2::facet_wrap(facets= vars(state_name), nrow=2,
-             labeller = 
-               ggplot2::labeller(
-                 state_name = 
-                   ggplot2::label_wrap_gen(width = 20)),
-             axes = "all_y") +
+  mutate(per_capita = (1e6*revenue)/population)
+
+
+ggplot2::ggplot(
+  data = stamp_per_capita  |>
+    filter(!stringr::str_detect(state_name,"Northern|Tasmania")),
+  ggplot2::aes(
+    x = financial_year,
+    y = per_capita,
+    colour = state_name,
+    linetype = revenue_type)) + 
+ ggplot2::geom_line() +
+ ggplot2::scale_linetype_manual(
+   name = NULL,
+   values = c("Actual"=1,"Assessed"=2))+
+ ggplot2::facet_wrap(
+   facets = vars(state_name), nrow=2,
+   labeller = 
+     ggplot2::labeller(
+       state_name = ggplot2::label_wrap_gen(width = 20)),
+   axes = "all_y") +
   ggplot2::scale_colour_manual(
     guide = 'none',
-    values=strayr::palette_state_name_2016,name=NULL)+
+    values = strayr::palette_state_name_2016,name=NULL)+
+  ggplot2::coord_cartesian(
+    xlim = c(lubridate::dmy("30-9-2018"),NA),
+    ylim = c(0,2e3)
+  ) +
   ggplot2::scale_x_date(
     name=NULL,
     date_labels = "%y",
-    date_breaks="1 years",
-    limits = c(lubridate::dmy("30-9-2015"),NA))+
-  ggplot2::scale_y_continuous(name="Revenue per capita, $ 000s", limits = c(0,2000))+
-  vpstheme::theme_vps_dh(base_size = 10)+
-  ggplot2::theme(plot.margin = 
-                   ggplot2::margin(0.5,0.5,0.5,0.5,"cm"),
-        legend.margin = ggplot2::margin(0,0,0,0,"cm"),
-        legend.position = "bottom",
-        plot.background = 
-          ggplot2::element_rect(fill = "white", colour = NULL),
-        axis.text.x = ggplot2::element_text(hjust=0.5))
-)
+    date_breaks = "1 years")+
+  ggplot2::scale_y_continuous(name = "Revenue per capita, $ 000s") +
+  ggplot2::guides(linetype = ggplot2::guide_legend(keywidth = 2)) +
+  vpstheme::theme_vps_dh(base_size = 8)
 ```
