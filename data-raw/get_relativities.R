@@ -158,8 +158,7 @@ latest_summary =
    state_name = factor(state_index, labels = cgc.abb),
    value = as.numeric(value)) |>
   dplyr::filter(!is.na(value), state_name %in% strayr::state_abb_au) |>
-  dplyr::select(-state_index) |>
-  tidyr::pivot_wider(names_from = state_name)
+  dplyr::select(financial_year,assessment_category, state_name, value)
 
 usethis::use_data(latest_summary, overwrite = TRUE)
 remove(latest_summary)

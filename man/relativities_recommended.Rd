@@ -5,19 +5,21 @@
 \alias{relativities_recommended}
 \title{Recommended relativities}
 \format{
-## `cgc`
+\subsection{\code{cgc}}{
+
 A data frame with nrow(relativities_recommended) rows and ncol(relativities_recommended) columns:
 \describe{
-  \item{update_year}{Year of the CGC update or review the data was sourced from.}
-  \item{state_name}{The Australian State or Territory the relativity is for.}
-  \item{financial_year}{Financial year the relativity was to be used.}
-  \item{relativity}{The recommended relativity for that year as assessed by the CGC.}
-  \item{relativity_type}{The type of relativity `recommended` to diffentiate from annual relativities.}
-  ...
+\item{update_year}{Year of the CGC update or review the data was sourced from.}
+\item{state_name}{The Australian State or Territory the relativity is for.}
+\item{financial_year}{Financial year the relativity was to be used.}
+\item{relativity}{The recommended relativity for that year as assessed by the CGC.}
+\item{relativity_type}{The type of relativity \code{recommended} to diffentiate from annual relativities.}
+...
+}
 }
 }
 \source{
-<https://www.cgc.gov.au/reports-for-government/>
+\url{https://www.cgc.gov.au/reports-for-government/}
 }
 \usage{
 relativities_recommended

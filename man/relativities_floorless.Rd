@@ -5,19 +5,21 @@
 \alias{relativities_floorless}
 \title{Adjusted relativities}
 \format{
-## `cgc`
+\subsection{\code{cgc}}{
+
 A data frame with nrow(relativities_floorless) rows and ncol(relativities_floorless) columns:
 \describe{
-  \item{update_year}{Year of the CGC update or review the data was sourced from.}
-  \item{state_name}{The Australian State or Territory the relativity is for.}
-  \item{financial_year}{Financial year the relativity was to be used.}
-  \item{relativity}{The recommended relativity for that year as assessed by the CGC.}
-  \item{relativity_type}{The type of relativity `floorless` to diffentiate from recommended relativities.}
-  ...
+\item{update_year}{Year of the CGC update or review the data was sourced from.}
+\item{state_name}{The Australian State or Territory the relativity is for.}
+\item{financial_year}{Financial year the relativity was to be used.}
+\item{relativity}{The recommended relativity for that year as assessed by the CGC.}
+\item{relativity_type}{The type of relativity \code{floorless} to diffentiate from recommended relativities.}
+...
+}
 }
 }
 \source{
-<https://www.cgc.gov.au/reports-for-government/>
+\url{https://www.cgc.gov.au/reports-for-government/}
 }
 \usage{
 relativities_floorless

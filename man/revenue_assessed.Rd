@@ -5,20 +5,22 @@
 \alias{revenue_assessed}
 \title{Assessed revenue}
 \format{
-## `cgc`
+\subsection{\code{cgc}}{
+
 A data frame with nrow(revenue_assessed) rows and ncol(revenue_assessed) columns:
 \describe{
-  \item{update_year}{Year of the CGC update or review the data was sourced from.}
-  \item{state_name}{The Australian State or Territory the relativity is for.}
-  \item{revenue_name}{The Australian State or Territory the relativity is for.}
-  \item{financial_year}{Financial year the relativity was to be used.}
-  \item{revenue}{The recommended relativity for that year as assessed by the CGC.}
-  \item{revenue_type}{The type of estimate `assessed` to diffentiate from adjusted and actual revenue.}
-  ...
+\item{update_year}{Year of the CGC update or review the data was sourced from.}
+\item{state_name}{The Australian State or Territory the relativity is for.}
+\item{revenue_name}{The Australian State or Territory the relativity is for.}
+\item{financial_year}{Financial year the relativity was to be used.}
+\item{revenue}{The recommended relativity for that year as assessed by the CGC.}
+\item{revenue_type}{The type of estimate \code{assessed} to diffentiate from adjusted and actual revenue.}
+...
+}
 }
 }
 \source{
-<https://www.cgc.gov.au/reports-for-government/>
+\url{https://www.cgc.gov.au/reports-for-government/}
 }
 \usage{
 revenue_assessed

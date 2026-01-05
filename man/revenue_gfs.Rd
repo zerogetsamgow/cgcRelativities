@@ -5,19 +5,21 @@
 \alias{revenue_gfs}
 \title{GFS Revenue}
 \format{
-## `abs`
+\subsection{\code{abs}}{
+
 A data frame with nrow(revenue_assessed) rows and ncol(revenue_assessed) columns:
 \describe{
-  \item{gfs_category}{The type of measure `revenue` to diffentiate from expenses.}
-  \item{gfs_subcategory}{The GFS `revenue` category.}
-  \item{state_name}{The Australian State or Territory the estimate is for.}
-  \item{financial_year}{Financial year the estimate is for.}
-  \item{value}{The estimated value.}
-  ...
+\item{gfs_category}{The type of measure \code{revenue} to diffentiate from expenses.}
+\item{gfs_subcategory}{The GFS \code{revenue} category.}
+\item{state_name}{The Australian State or Territory the estimate is for.}
+\item{financial_year}{Financial year the estimate is for.}
+\item{value}{The estimated value.}
+...
+}
 }
 }
 \source{
-<https://www.abs.gov.au/statistics/economy/government/government-finance-statistics-annual/>
+\url{https://www.abs.gov.au/statistics/economy/government/government-finance-statistics-annual/}
 }
 \usage{
 revenue_gfs

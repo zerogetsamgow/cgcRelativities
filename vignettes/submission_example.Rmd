@@ -1,13 +1,12 @@
 ---
-title: "Submission in response to the Productivity Commission's Issues Paper - GST  distribution reforms"
+title: "submission_example"
 author: "Sam Gow"
-fontfamily: cantarell
-fontsize: 11pt
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{submission}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+  "%\\VignetteIndexEntry{submission_example}
+  %\\VignetteEngine{knitr::rmarkdown}
+  %\\VignetteEncoding{UTF-8}\n"
+fontsize: 11pt
 ---
 
 ```{r, include = FALSE, echo = FALSE}
@@ -16,7 +15,7 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.path = "man/figures/README-",
   out.width = "100%",
-  dpi = 300
+  dpi = 600
 )
 library(cgcRelativities)
 library(dplyr)
@@ -32,13 +31,13 @@ This submission responds to two questions asked by the Productivity Commission i
 
 In summary, this submission contends that the answer to both questions is 'no, the methods used to achieve horizontal fiscal equalisation could be improved'.
 
-All analysis in this document can be accessed at <https://github.com/zerogetsamgow/cgcRelativities>. The R package available at this link provides the CGC data used in my analysis in tidy formats (and example code to tidy additional data contained in the CGC's update releases).Commission staff may find the data and code useful for their own analysis.
+All analysis in this document can be accessed at <https://github.com/zerogetsamgow/cgcRelativities>. The R package available at this link provides the CGC data used in my analysis in tidy formats (and example code to tidy additional data contained in the CGC's update releases). Commission staff may find the data and code useful for their own analysis. 
 
 ### Do the 2018 GST distribution reforms strike the right balance between responding to changing circumstances and providing certainty around revenue?
 
 In its [Issues Paper](https://assets.pc.gov.au/2025-11/gst-reforms-issues.pdf?VersionId=YQP9pGfxnDPTIkkKhn48nGko5OncLRWw), the Productivity Commission asked 'whether the [current approach to horizontal fiscal equalisation] strike[s] the right balance between responding to changing circumstances and providing certainty around revenue'.
 
-This submission contends the CGC's attempts to smooth variation in GST payments over time undermine the objective of horizontal fiscal equalisation and by doing so risk creating mismatches between state and territory revenue and expenditure requirements. Horizontal fiscal equalisation should aim to match revenue with expenditure needs in a given year, rather than revenue from year to year. By doing so, it increases certainty about each state and territory's total revenue, rather than a single source, and better matches total revenue to expenditure needs.
+This submission contends the CGC's attempts to smooth variation in GST payments over time undermine the objective of horizontal fiscal equalisation and by doing so risk creating mismatches between state and territory revenue and expenditure requirements. Horizontal fiscal equalisation should aim to match revenue with expenditure needs in a given year, rather than revenue from year to year. By doing the latter, it increases certainty about each state and territory's total revenue, rather than a single source, and better matches total revenue to expenditure needs.
 
 The CGC's current approach involves three features that aim to provide additional certainty about each state and territory's GST payment revenue:
 
@@ -96,9 +95,8 @@ ggplot2::ggplot(
   ggplot2::aes(
     x = financial_year - months(6),
     y = relativity,
-    colour = relativity_type,
-    fill = relativity_type))+
-  ggplot2::geom_point(size=1,alpha=.8)+
+    colour = relativity_type))+
+  ggplot2::geom_point(size = .6, alpha=.8)+
   ggplot2::facet_wrap(
     facets = vars(state_name), nrow=2,
     labeller =
@@ -114,14 +112,17 @@ ggplot2::ggplot(
    xlim = c(lubridate::dmy("30-9-2018"),NA)) +
   ggplot2::scale_y_continuous(
     name="Relativity")+
-  ggplot2::scale_colour_viridis_d(
-    name=NULL, option="plasma")+
-  ggplot2::scale_fill_viridis_d(
-    name=NULL, option="plasma")+
+  ggplot2::scale_colour_manual(
+    name=NULL, 
+    values = c(
+      vpstheme::bv.mint,
+      vpstheme::bv.pink,
+      vpstheme::bv.cerulean)) +
   vpstheme::theme_vps_dh(
-    base_size = 8)+
+    base_size = 20)+
   ggplot2::labs(
-    caption = "Tasmania and Northern Territory omitted for legibility.") +
+    caption = 
+      "Tasmania and Northern Territory omitted for legibility.") +
   ggplot2::theme(axis.text.x = ggplot2::element_text(hjust=0.5))
 ```
 
@@ -142,10 +143,14 @@ The chart above shows the relativities based on this approach as pink dots. In g
 difference.relativities =
   all.relativities |>
   dplyr::filter(!financial_year>
-                  lubridate::ymd("2024-6-30")) |>
-  dplyr::group_by(state_name, financial_year) |>
-  dplyr::arrange(state_name, financial_year,relativity_type) |>
-  dplyr::mutate(relativity=relativity-first(relativity)) |>
+                  lubridate::ymd("2024-6-30"),
+                !financial_year<
+                  lubridate::ymd("2019-6-30")
+                ) |>
+  dplyr::group_by(
+    state_name, financial_year) |>
+          dplyr::arrange(state_name,   financial_year,relativity_type) |>
+  dplyr::mutate(relativity= abs(relativity-first(relativity))) |>
   dplyr::filter(!stringr::str_detect(relativity_type,"Actual"))
 
 
@@ -156,23 +161,32 @@ ggplot2::ggplot(
   ggplot2::aes(
     x = financial_year - months(6),
     y = relativity,
-    colour = relativity_type,
     fill = relativity_type))+
-  ggplot2::geom_col(position = ggplot2::position_identity())+
+  ggplot2::geom_col(
+  #  width = 150,
+    position = ggplot2::position_dodge())+
   ggplot2::scale_x_date(
     name=NULL,
     date_labels = "%y", 
     date_breaks = "1 years") +
   ggplot2::coord_cartesian(
     xlim = c(lubridate::dmy("30-6-2018"),NA)) + 
-  vpstheme::scale_y_continuvps(name="Difference from actual capacity")+
-  ggplot2::scale_colour_viridis_d(name=NULL, option="plasma",alpha=.5)+
-  ggplot2::scale_fill_viridis_d(name=NULL, option="plasma",alpha=.5)+
+  vpstheme::scale_y_continuvps(
+    name="Absolute difference from actual capacity")+
+  ggplot2::scale_fill_manual(
+    name=NULL, 
+    values = c(
+      ggplot2::alpha(vpstheme::bv.pink,.7),
+      ggplot2::alpha(vpstheme::bv.cerulean,.7))) +
   ggplot2::facet_wrap(facets=vars(state_name),nrow=2) +
   ggplot2::labs(
-    caption = "Tasmania and Northern Territory omitted for consistency.") +
-  vpstheme::theme_vps_dh(base_size = 8)+
-  ggplot2::theme( axis.text.x = ggplot2::element_text(hjust=.5))
+    caption = 
+      "Tasmania and Northern Territory omitted for consistency.") +
+  ggplot2::guides(fill = ggplot2::guide_legend(keywidth = .5)) +
+  vpstheme::theme_vps_dh(
+    base_size = 20)+
+  ggplot2::theme(
+    axis.text.x = ggplot2::element_text(hjust=.5))
 ```
 
 As shown in the table below, relativities calculated using this method would have been closer on average to actual fiscal requirements in the year of application than the current approach for most states and territories over the period 2019-20 to 2024-25.
@@ -215,6 +229,7 @@ These needs needs reflects each state’s capacity to raise revenue and the amou
 ```{r assessment_summary, echo = FALSE}
 knitr::kable(
   latest_summary |>
+  tidyr::pivot_wider(names_from = state_name) |> 
     mutate_if(
       is.numeric, 
       format, 
@@ -224,7 +239,7 @@ knitr::kable(
     dplyr::select(-financial_year) |> 
     dplyr::rename_with(
       \(x) stringr::str_replace(x,"_", " "))) |>
-  kableExtra::kable_styling(font_size = 8)
+  kableExtra::kable_styling()
 
 ```
 
@@ -264,7 +279,7 @@ ggplot2::ggplot(
       colour = state_name,
       linetype = revenue_type)
     ) + 
-   ggplot2::geom_line() +
+  ggplot2::geom_line(linewidth = .5) +
    ggplot2::scale_linetype_manual(
      name = NULL,
      values = c("Actual"=1,"Assessed"=2))+
@@ -290,7 +305,7 @@ ggplot2::ggplot(
     name="Revenue per capita, $ 000s", 
     labels = scales::label_number(scale = 1/1e3))+
   ggplot2::guides(linetype = ggplot2::guide_legend(keywidth = 2)) +
-  vpstheme::theme_vps_dh(base_size = 8)
+  vpstheme::theme_vps_dh(base_size = 20)
 ```
 
 Your gaze might be drawn to the ACT in this chart. Not surprisingly. The ACT raises 50 per cent more revenue per person from payroll tax than the CGC assessment1. The gap between the ACT’s actual and assessed revenue reflects the assessment assuming limits on the ACT imposing payroll tax on the largest employer in the capital, the Australian Government, reduce their capacity. As a result of these limits, the CGC considers the ACT to have a similar or smaller payroll tax base per person than most other states.
@@ -386,7 +401,7 @@ ggplot2::ggplot(
     colour = state_name,
     linetype = name
   )) +
-  ggplot2::geom_line() +
+ ggplot2::geom_line(linewidth = .5) +
   ggplot2::scale_linetype_manual(
      name = NULL,
      values = c("Current"=1,"Proposed"=2))+
@@ -412,7 +427,7 @@ ggplot2::ggplot(
     ylim = c(0,15000), 
     xlim = c(lubridate::dmy("30-9-2018"),NA)) +
   ggplot2::guides(linetype = ggplot2::guide_legend(keywidth = 2)) +
-  vpstheme::theme_vps_dh(base_size = 8) +
+  vpstheme::theme_vps_dh(base_size = 20) +
   ggplot2::theme(axis.text.x = ggplot2::element_text(hjust=0.5))
 
 ```
@@ -431,7 +446,7 @@ ggplot2::ggplot(
     y = need, 
     colour = state_name,
     linetype = name)) +
-  ggplot2::geom_line() +
+ ggplot2::geom_line(linewidth = .5) +
   ggplot2::geom_hline(
     yintercept = 0,
     colour = vpstheme::bv.charcoal, 
@@ -461,7 +476,7 @@ ggplot2::ggplot(
     xlim = c(lubridate::dmy("30-9-2018"),NA),
     ylim = c(-5.5e3,5e3) )+
   ggplot2::guides(linetype = ggplot2::guide_legend(keywidth = 2)) +
-  vpstheme::theme_vps_dh(base_size = 8) +
+  vpstheme::theme_vps_dh(base_size = 20) +
   ggplot2::theme(axis.text.x = ggplot2::element_text(hjust=0.5))
 ```
 
@@ -495,14 +510,13 @@ stamp_per_capita =
 
 
 ggplot2::ggplot(
-  data = stamp_per_capita  |>
-    filter(!stringr::str_detect(state_name,"Northern|Tasmania")),
+  data = stamp_per_capita,
   ggplot2::aes(
     x = financial_year,
     y = per_capita,
     colour = state_name,
     linetype = revenue_type)) + 
- ggplot2::geom_line() +
+ ggplot2::geom_line(linewidth = .5) +
  ggplot2::scale_linetype_manual(
    name = NULL,
    values = c("Actual"=1,"Assessed"=2))+
@@ -525,5 +539,5 @@ ggplot2::ggplot(
     date_breaks = "1 years")+
   ggplot2::scale_y_continuous(name = "Revenue per capita, $ 000s") +
   ggplot2::guides(linetype = ggplot2::guide_legend(keywidth = 2)) +
-  vpstheme::theme_vps_dh(base_size = 8)
+  vpstheme::theme_vps_dh(base_size = 20)
 ```

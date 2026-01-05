@@ -5,19 +5,21 @@
 \alias{relativities_annual}
 \title{Annual relativities}
 \format{
-## `cgc`
+\subsection{\code{cgc}}{
+
 A data frame with nrow(relativities_annual) rows and ncol(relativities_annual) columns:
 \describe{
-  \item{update_year}{Year of the CGC update or review the data was source from.}
-  \item{state_name}{The Australian State or Territory the relativity is for.}
-  \item{financial_year}{Financial year data used to calculate the relativity was drawn from.}
-  \item{relativity}{The annual per capita relativity for that year as assessed by the CGC.}
-  \item{relativity_type}{The type of relativity `annual` to diffentiate from averaged recommended relativities.}
-  ...
+\item{update_year}{Year of the CGC update or review the data was source from.}
+\item{state_name}{The Australian State or Territory the relativity is for.}
+\item{financial_year}{Financial year data used to calculate the relativity was drawn from.}
+\item{relativity}{The annual per capita relativity for that year as assessed by the CGC.}
+\item{relativity_type}{The type of relativity \code{annual} to diffentiate from averaged recommended relativities.}
+...
+}
 }
 }
 \source{
-<https://www.cgc.gov.au/reports-for-government/>
+\url{https://www.cgc.gov.au/reports-for-government/}
 }
 \usage{
 relativities_annual

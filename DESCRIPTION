@@ -1,7 +1,7 @@
 Package: cgcRelativities
 Type: Package
 Title: Tidy data versions of the Commonwealth Grants Commission's data releases
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: c(
     person(
       "Sam", "Gow",
@@ -9,21 +9,25 @@ Authors@R: c(
       role = c("aut", "cre")
     )
   )
-Description: cgcRelativities provides tidy data versions of certain data tables from
-    the Commonwealth Grant's Commission's annual [Reports to Government](https://www.cgc.gov.au/reports-for-government)..
+Description: cgcRelativities provides tidy data versions of certain data tables from the Commonwealth Grant's Commission's annual [Reports to Government](https://www.cgc.gov.au/reports-for-government).
 License: CC BY 4.0
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.3
 Depends: 
     R (>= 3.5)
-Suggests: 
-    knitr,
-    rmarkdown
 VignetteBuilder: knitr
 URL: https://github.com/zerogetsamgow/cgcRelativities
 BugReports: https://github.com/zerogetsamgow/cgcRelativities/issues
 Imports: 
     curl,
     rvest,
-    tibble
+    tibble,
+    utils
+Suggests: 
+    dplyr,
+    knitr,
+    rmarkdown,
+    stringr,
+    tidyr
+Roxygen: list(markdown = TRUE)

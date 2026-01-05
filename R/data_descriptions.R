@@ -125,7 +125,6 @@
 
 
 
-
 #' GFS Taxation
 #'
 #' A dataset of the ABS's estimates of of state taxation.
@@ -142,3 +141,52 @@
 #' }
 #' @source <https://www.abs.gov.au/statistics/economy/government/taxation-revenue-australia>
 "taxation_gfs"
+
+#' Gross State Product
+#'
+#' A dataset of the ABS's estimates of of state GSP.
+#'
+#' @format ## `abs`
+#' A data frame with nrow(revenue_assessed) rows and ncol(revenue_assessed) columns:
+#' \describe{
+#'   \item{financial_year}{Financial year the estimate is for.}
+#'   \item{state_name}{The Australian State or Territory the estimate is for.}
+#'   \item{measure}{The type of value measured.}
+#'   \item{value}{The estimated value.}
+#'   ...
+#' }
+#' @source <https://www.abs.gov.au/statistics/economy/government/taxation-revenue-australia>
+"estimated_gsp"
+
+#' Latest relativity calculations
+#'
+#' A dataset of the CGC's calculations of relativities.
+#'
+#' @format ## `cgc`
+#' A data frame with nrow(revenue_assessed) rows and ncol(revenue_assessed) columns:
+#' \describe{
+#'   \item{financial_year}{Financial year the estimate is for.}
+#'   \item{state_name}{The Australian State or Territory the estimate is for.}
+#'   \item{assessment_category}{The type of value assessed.}
+#'   \item{value}{The estimated value.}
+#'   ...
+#' }
+#' @source <https://www.cgc.gov.au/reports-for-government/>
+"latest_summary"
+
+#' Population
+#'
+#' A dataset of the ABS's estimates of state population.
+#'
+#' @format ## `abs`
+#' A data frame with nrow(revenue_assessed) rows and ncol(revenue_assessed) columns:
+#' \describe{
+#'   \item{financial_year}{Financial year the estimate is for.}
+#'   \item{state_name}{The Australian State or Territory the estimate is for.}
+#'   \item{unit}{The unit of population estimated.}
+#'   \item{population}{The estimated population.}
+#'   ...
+#' }
+#' @source <https://www.abs.gov.au/statistics/people/population>
+"population_erp"
+
