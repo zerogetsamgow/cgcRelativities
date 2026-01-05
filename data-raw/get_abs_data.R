@@ -2,32 +2,32 @@ source("~/cgcRelativities/data-raw/get_cgc_urls.R", echo = TRUE)
 
 # Get actual tax revenue from ABS
 taxation_gfs =
-  tibble(
+  tibble::tibble(
     abs_url =
-      str_c("https://www.abs.gov.au/statistics/economy/government/",
+      stringr::str_c("https://www.abs.gov.au/statistics/economy/government/",
             "taxation-revenue-australia/2023-24/55060DO001_202324.xlsx")
   ) |>
-  mutate(
-    file_name=basename(abs_url),
+  dplyr::mutate(
+    file_name = basename(abs_url),
     download = file.path(cgc.path,file_name)
   ) |>
-  mutate(x =
+  dplyr::mutate(x =
            pmap(
              list(abs_url, download),
              download_cgc
            )
   )  |>
-  select(-x) |>
+  dplyr::select(-x) |>
   # Get sheet names.
-  mutate(sheets=map(download,readxl::excel_sheets)) |>
-  unnest(sheets) |>
-  filter(str_detect(sheets,"Table_[2-9]")) |>
-  mutate(data=pmap(list(download,sheets), readxl::read_excel, range="A5:k50", col_names = TRUE, col_types = "text"))  |>
-  unnest(data) |>
+  dplyr::mutate(sheets = purrr::map(download, readxl::excel_sheets)) |>
+  tidyr::unnest(sheets) |>
+  dplyr::filter(str_detect(sheets,"Table_[2-9]")) |>
+  dplyr::mutate(data=pmap(list(download,sheets), readxl::read_excel, range="A5:k50", col_names = TRUE, col_types = "text"))  |>
+  tidyr::unnest(data) |>
   janitor::clean_names() |>
-  rename("revenue_name" = x1) |>
-  filter(!is.na(revenue_name), !str_detect(revenue_name, "(T|t)otal")) |>
-  mutate(
+  dplyr::rename("revenue_name" = x1) |>
+  dplyr::filter(!is.na(revenue_name), !str_detect(revenue_name, "(T|t)otal")) |>
+  dplyr::mutate(
     state_index = str_extract(sheets,"[0-9]") |> as.numeric(),
     state_index = state_index - 1,
     state_name = strayr::state_name_au[state_index]
@@ -63,7 +63,11 @@ taxation_gfs =
 
 # Save for export
 usethis::use_data(taxation_gfs, overwrite = TRUE)
+
+#Clean up
+files = unique(taxation_gfs$download)
 remove(taxation_gfs)
+file.remove(files)
 
 # Get GFS data
 abs_gfs =
@@ -88,10 +92,10 @@ abs_gfs =
         function(a,b) if(!file.exists(b)) download.file(a,b,mode="wb")))  |>
   select(-x) |>
   mutate(sheets = map(download,readxl::excel_sheets)) |>
-  unnest(sheets) |>
+  tidyr::unnest(sheets) |>
   filter(sheets=="Table_1") |>
   mutate(data=pmap(list(download, sheets), readxl::read_excel, range="A5:k50", col_names = TRUE, col_types = "text"))  |>
-  unnest(data) |>
+  tidyr::unnest(data) |>
   janitor::clean_names() |>
   mutate(gfs_category = str_extract(x1,"GFS.*"), .before = "x1") |>
   fill(gfs_category) |>
@@ -131,6 +135,10 @@ expenses_gfs =
 
 usethis::use_data(revenue_gfs, overwrite = TRUE)
 usethis::use_data(expenses_gfs, overwrite = TRUE)
+
+# Clean up
+files = unique(abs_gfs$download)
+file.remove(files)
 remove(revenue_gfs, expenses_gfs, abs_gfs)
 
 # Get and tidy estimated residential population data from ABS
@@ -160,6 +168,8 @@ population_erp =
   )
 
 usethis::use_data(population_erp, overwrite = TRUE)
+files = unique(population_erp$download)
+file.remove(files)
 remove(population_erp)
 
 estimated_gsp =
@@ -182,12 +192,12 @@ estimated_gsp =
         function(a,b) if(!file.exists(b)) download.file(a,b,mode="wb")))  |>
   select(-x) |>
   mutate(sheets = map(download,readxl::excel_sheets)) |>
-  unnest(sheets) |>
+  tidyr::unnest(sheets) |>
   filter(str_detect(sheets,"Data")) |>
   # Extract data
   mutate(data=pmap(list(download,sheets), readxl::read_excel))  |>
   select(data) |>
-  unnest(data) |>
+  tidyr::unnest(data) |>
   rename(
     "date" = 1
   ) |>
@@ -227,4 +237,7 @@ estimated_gsp =
 
 
 usethis::use_data(estimated_gsp, overwrite = TRUE)
+files = unique(estimated_gsp$download)
+file.remove(files)
+remove(estimated_gsp)
 

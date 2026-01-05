@@ -1,5 +1,8 @@
 ---
-title: "submission"
+title: "Submission in response to the Productivity Commission's Issues Paper - GST  distribution reforms"
+author: "Sam Gow"
+fontfamily: cantarell
+fontsize: 11pt
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{submission}
@@ -11,10 +14,12 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  out.width = "100%"
+  fig.path = "man/figures/README-",
+  out.width = "100%",
+  dpi = 300
 )
-library(dplyr)
 library(cgcRelativities)
+library(dplyr)
 ```
 
 ## Introduction
@@ -27,15 +32,15 @@ This submission responds to two questions asked by the Productivity Commission i
 
 In summary, this submission contends that the answer to both questions is 'no, the methods used to achieve horizontal fiscal equalisation could be improved'.
 
-All analysis in this document can be accessed at <https://github.com/zerogetsamgow/cgcRelativities>. The R package available at this link provides CGC data in tidy formats (and example code to tidy data contained in the CGC's update releases) the Productivity Commission may find useful for its own analysis.
+All analysis in this document can be accessed at <https://github.com/zerogetsamgow/cgcRelativities>. The R package available at this link provides the CGC data used in my analysis in tidy formats (and example code to tidy additional data contained in the CGC's update releases).Commission staff may find the data and code useful for their own analysis.
 
 ### Do the 2018 GST distribution reforms strike the right balance between responding to changing circumstances and providing certainty around revenue?
 
 In its [Issues Paper](https://assets.pc.gov.au/2025-11/gst-reforms-issues.pdf?VersionId=YQP9pGfxnDPTIkkKhn48nGko5OncLRWw), the Productivity Commission asked 'whether the [current approach to horizontal fiscal equalisation] strike[s] the right balance between responding to changing circumstances and providing certainty around revenue'.
 
-This submission contends the CGC's attempts to smooth variation in GST payments over time undermine the objective of horizontal fiscal equalisation and by doing so risk creating mismatches between state and territory revenue and expenditure requirements. Horizontal fiscal equalisation should aim to match revenue with expenditure needs in a given year, rather than revenue from year to year.
+This submission contends the CGC's attempts to smooth variation in GST payments over time undermine the objective of horizontal fiscal equalisation and by doing so risk creating mismatches between state and territory revenue and expenditure requirements. Horizontal fiscal equalisation should aim to match revenue with expenditure needs in a given year, rather than revenue from year to year. By doing so, it increases certainty about each state and territory's total revenue, rather than a single source, and better matches total revenue to expenditure needs.
 
-The CGC's current approach involves three features that aim to provide additional certainty about state and territory GST payment revenue:
+The CGC's current approach involves three features that aim to provide additional certainty about each state and territory's GST payment revenue:
 
 -   recommended relativities are provided prior to the commencement of the year they apply - by providing its recommendations for 2025-26 before the start of that year, the CGC reduces uncertainty about how much each state will receive when they are preparing their 2025-26 budgets (some uncertainty remain as the total amount of GST and the population estimates used to calculate payments won't be determined until the second half of 2026). However, by doing so the CGC must base its assessments of fiscal capacity and need on data further removed from the year they will apply.
 -   the recommended relativities (prior to any application of a floor) average the CGC's assessment of state fiscal capacity in three previous years known as 'annual relativities'. Averaging over three years smoothes variations in the series of recommended relativities. For 2025-26, the recommended relativies averaged the CGC's assessment of state fiscal capacities in 2023-24, 2022-23, and 2021-22.
@@ -43,7 +48,7 @@ The CGC's current approach involves three features that aim to provide additiona
 
 [^1]: This submission does not deal with the latter feature which is clearly flawed and is likely to be the subject of multiple submissions that will make strong arguments for its removal.
 
-By making the GST payments more predictable in this way, the CGC is making them less effective in equalising fiscal capacity. However, the case for reducing uncertainty is unclear. State budgets are also affected by many other sources of uncertainty. State treasurer's may be more certain about the amount of GST payments they will receive, but overall this approach results in the risk of them not having the fiscal capacity in a given year to provide the average level of services.
+By making the GST payments more predictable in this way, the CGC is making them less effective at equalising fiscal capacity. However, the case for reducing uncertainty is unclear. State budgets are also affected by many other sources of uncertainty. State treasurer's may be more certain about the amount of GST payments they will receive due to these features, but overall this approach results in the risk of them not having the fiscal capacity in a given year to provide the average level of services. It also risks amplifying fluctuations in own source revenue.
 
 For example, if a state's revenue raising capacity drops between the assessment period and the application year, the GST payment calculated using the CGC's current methodology will result in them having insufficient fiscal capacity to fund services at the average level. As such, increasing certainty about GST payments comes at the expense of equalising fiscal capacity and is likely to make budgeting harder, not easier.
 
@@ -60,7 +65,7 @@ relativies_actual =
   relativities_annual |> 
   dplyr::group_by(financial_year , state_name) |>
   dplyr::arrange(state_name, desc(financial_year ), desc(update_year)) |>
-  dplyr::filter(dplyr::row_number()==dplyr::n()) |> 
+  dplyr::filter(dplyr::row_number() == dplyr::n()) |> 
   dplyr::mutate(relativity_type = "Actual")
 
 # Get annual relativity for Prior-year
@@ -76,17 +81,18 @@ relativities_prior =
 
 # Combine all data
 all.relativities =
-  bind_rows(
+  dplyr::bind_rows(
     relativies_actual,
     relativities_prior,
-    relativities_floorless |> mutate(relativity_type = "Recommended")
+    relativities_floorless |>
+      dplyr::mutate(relativity_type = "Recommended")
   ) 
 
 # Create plot for headline chart
 
 ggplot2::ggplot(
   all.relativities |> 
-    filter(!stringr::str_detect(state_name,"Northern|Tasmania")),
+    dplyr::filter(!stringr::str_detect(state_name,"Northern|Tasmania")),
   ggplot2::aes(
     x = financial_year - months(6),
     y = relativity,
@@ -124,6 +130,8 @@ Fiscal equalisation could be improved if the CGC's recommendations:
 -   applied in the year they are provided - that is, the recommendations made on 14 March 2025 would apply to 2024-25 payments.
 
 -   were based only on an assessment of the most recent year data is available for, rather than an average of three years.
+
+Effectively this would result in recommended relativities using only the most up to date actuals data available.
 
 The chart above shows the relativities based on this approach as pink dots. In general, they are a better reflection of the fiscal capacity when they would apply then the current recommendations. This can be seen in the chart below, where the assessed fiscal capacity for the prior year has generally been closer to actual fiscal capacity in any given year than the CGC's recommendations.
 
@@ -190,7 +198,7 @@ knitr::kable(
 
 ```
 
-If I was a state treasurer, I would prefer this outcome to the certainty provided by the current approach as it would help to ensure the state has the fiscal capacity to provide services. There are other options for states to smooth revenue over time (borrowing and saving) or better plan for changes (improving forecasting methods) that don't detract from fiscal equalisation.
+If I was a state treasurer, I would prefer this outcome to the certainty provided by the current approach as it would help to ensure the state has the fiscal capacity to provide services at the average level. There are other options for states to smooth revenue over time (borrowing and saving) or better plan for changes (improving forecasting methods) that don't detract from fiscal equalisation.
 
 There is also no evidence that increasing certainty of GST payments leads to better fiscal decision making. The evidence available suggests states and territory may spend [windfall payments](https://www.theage.com.au/national/victoria-s-spending-decision-reignites-spat-between-states-over-gst-carve-up-20250522-p5m1fs.html) or cut spending in the face of [shortfalls](https://www.abc.net.au/news/2024-04-22/nsw-treasurer-daniel-mookhey-warns-budget-shock-11b-gst-hole/103751654).
 
@@ -198,9 +206,9 @@ There is also no evidence that increasing certainty of GST payments leads to bet
 
 The current approach to assessing state own-source revenue is not delivering a reasonable level of horizontal fiscal equalisation. Replacing the current approach (aggregating assessments of individual own-source revenue streams) with a simpler measure (like state final demand) would be more efficient both in terms of administrative effort required and the tax system that might arise from removing disincentives for tax reform.
 
-The Commonwealth Grants Commission uses a ‘need’ to determine a weighting (called a relativity) that is applied to state populations to determine their share of GST.
+The Commonwealth Grants Commission calculates revenue and expenditure ‘needs’ to determine the relativity that is applied to state populations to determine their share of GST.
 
-This need reflects each state’s capacity to raise revenue and the amount each would spend to deliver similar levels of service (as well as assessments of borrowing and investment costs and Commonwealth payments other than the GST). A summary of these calculations for 2021-22 is shown below.
+These needs needs reflects each state’s capacity to raise revenue and the amount each would spend to deliver similar levels of service (as well as assessments of borrowing and investment costs and Commonwealth payments other than the GST). A summary of these calculations for 2023-24 is shown below.
 
 ### Summary of CGC assessment calculations for 2023-24
 
@@ -212,14 +220,15 @@ knitr::kable(
       format, 
       scientific = FALSE,
       digits = 2, nsmall = 2) |> 
-    filter(financial_year == max(financial_year)) |> 
-    select(-financial_year) |> 
-    rename_with(\(x) stringr::str_replace(x,"_", " "))) |>
+    dplyr::filter(financial_year == max(financial_year)) |> 
+    dplyr::select(-financial_year) |> 
+    dplyr::rename_with(
+      \(x) stringr::str_replace(x,"_", " "))) |>
   kableExtra::kable_styling(font_size = 8)
 
 ```
 
-The importance of revenue capacity can be seen in Western Australia’s capacity. They were assessed as being able to raise nearly \$3 000 per person more than any other state. Compare this to the amount of GST per person to be shared, and we see much of Western Australia’s relative fiscal strength came from revenue.
+The importance of revenue capacity can be seen in Western Australia’s assessment. They were assessed as being able to raise nearly \$3 000 per person more than any other state. Compare this to the amount of GST per person to be shared, and we see much of Western Australia’s relative fiscal strength came from revenue.
 
 Western Australia’s fiscal strength resulted in a decision to place a floor under each states relativity. Instead of imposing a floor, another option to address Western Australia’s declining GST share could have been to make sure the CGC's assessments better reflected capacity. The ‘assessed’ that prefaces each category in the table above is an important qualifier. GST relativities are based on the CGC’s assessment of each state’s capacity to raise revenue, not the amounts they raise.
 
@@ -229,24 +238,26 @@ I, and others, consider the current assessments to be flawed. The reasons for th
 
 ```{r payroll, echo = FALSE}
 payroll_per_capita =
-  bind_rows(
+  dplyr::bind_rows(
     taxation_gfs |> 
-     filter(stringr::str_detect(revenue_name,"Payroll")),
+     dplyr::filter(stringr::str_detect(revenue_name,"Payroll")),
     revenue_assessed |> 
-      filter(stringr::str_detect(revenue_name,"Payroll")) |> 
-      group_by(financial_year, state_name, revenue_name, revenue_type) |> 
-      arrange(
+      dplyr::filter(stringr::str_detect(revenue_name,"Payroll")) |> 
+      dplyr::group_by(
+        financial_year, state_name, revenue_name, revenue_type) |> 
+      dplyr::arrange(
         financial_year, state_name, revenue_name, revenue_type, desc(update_year)) |> 
-      slice_head(n=1)) |> 
-  left_join(population_erp, by = join_by("state_name","financial_year")) |>
-  mutate(
+      dplyr::slice_head(n=1)) |> 
+  dplyr::left_join(population_erp, by = join_by("state_name","financial_year")) |>
+  dplyr::mutate(
     per_capita = (1e6*revenue)/population
   )
 
 #PLot
 ggplot2::ggplot(
-  data = payroll_per_capita  |>
-    filter(!stringr::str_detect(state_name,"Northern|Tasmania")),
+  data = 
+    payroll_per_capita  |>
+    dplyr::filter(!stringr::str_detect(state_name,"Northern|Tasmania")),
     ggplot2::aes(
       x = financial_year,
       y = per_capita,
@@ -257,12 +268,13 @@ ggplot2::ggplot(
    ggplot2::scale_linetype_manual(
      name = NULL,
      values = c("Actual"=1,"Assessed"=2))+
-   ggplot2::facet_wrap(facets= vars(state_name), nrow=2,
-             labeller = 
-               ggplot2::labeller(
-                 state_name = 
-                   ggplot2::label_wrap_gen(width = 20)),
-             axes = "all_y") +
+   ggplot2::facet_wrap(
+     facets = vars(state_name), nrow=2,
+     labeller = 
+       ggplot2::labeller(
+         state_name = 
+           ggplot2::label_wrap_gen(width = 20)),
+     axes = "all_y") +
   ggplot2::scale_colour_manual(
     guide = 'none',
     values=strayr::palette_state_name_2016,name=NULL)+
@@ -281,7 +293,7 @@ ggplot2::ggplot(
   vpstheme::theme_vps_dh(base_size = 8)
 ```
 
-Your gaze might be drawn to the ACT in this chart. Not surprisingly. The ACT raises 50 per cent more revenue per person from payroll tax than the CGC assessment1. The gap between the ACT’s actual and assessed revenue reflects limits on the ACT imposing payroll tax on the largest employer in the capital, the Australian Government. As a result of these limits, the CGC considers the ACT to have a similar or smaller payroll tax base per person than most other states.
+Your gaze might be drawn to the ACT in this chart. Not surprisingly. The ACT raises 50 per cent more revenue per person from payroll tax than the CGC assessment1. The gap between the ACT’s actual and assessed revenue reflects the assessment assuming limits on the ACT imposing payroll tax on the largest employer in the capital, the Australian Government, reduce their capacity. As a result of these limits, the CGC considers the ACT to have a similar or smaller payroll tax base per person than most other states.
 
 So, why is the ACT’s actual revenue so much higher? Defenders of the current approach would suggest it results from a policy choice to impose a higher tax rate, not capacity. The CGC’s methodology avoids penalising jurisdictions for such choices, but, while the ACT does impose the highest payroll tax rate, this policy choice likely reflects capacity not captured in the current methodology.
 
