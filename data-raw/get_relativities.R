@@ -146,7 +146,10 @@ latest_summary =
     update_year==2026
   ) |>
   dplyr::mutate(
-    data = purrr::pmap(list(download,sheets), readxl::read_excel, range="a2:j100"))  |>
+    data = purrr::pmap(
+      list(download,sheets),
+      readxl::read_excel,
+      range="a2:j100"))  |>
   tidyr::unnest(data) |>
   janitor::clean_names() |>
   dplyr::filter(!is.na(x2)) |>
