@@ -19,6 +19,9 @@ knitr::opts_chunk$set(
 )
 library(cgcRelativities)
 library(dplyr)
+library(tidyr)
+
+names(cgcRelativities::latest_summary)
 ```
 
 ## Introduction
@@ -91,7 +94,9 @@ all.relativities =
 
 ggplot2::ggplot(
   all.relativities |> 
-    dplyr::filter(!stringr::str_detect(state_name,"Northern|Tasmania")),
+    dplyr::filter(
+      !stringr::str_detect(
+        state_name,"Northern|Tasmania")),
   ggplot2::aes(
     x = financial_year - months(6),
     y = relativity,
@@ -109,7 +114,7 @@ ggplot2::ggplot(
     date_labels = "%y",
     date_breaks="1 years")+
   ggplot2::coord_cartesian(
-   xlim = c(lubridate::dmy("30-9-2018"),NA)) +
+   xlim = c(lubridate::dmy("30-9-2019"),NA)) +
   ggplot2::scale_y_continuous(
     name="Relativity")+
   ggplot2::scale_colour_manual(
@@ -128,7 +133,7 @@ ggplot2::ggplot(
 
 Fiscal equalisation could be improved if the CGC's recommendations:
 
--   applied in the year they are provided - that is, the recommendations made on 14 March 2025 would apply to 2024-25 payments.
+-   applied in the year they are provided - that is, the recommendations made on 13 March 2026 would apply to 2025-26 payments.
 
 -   were based only on an assessment of the most recent year data is available for, rather than an average of three years.
 
@@ -143,7 +148,7 @@ The chart above shows the relativities based on this approach as pink dots. In g
 difference.relativities =
   all.relativities |>
   dplyr::filter(!financial_year>
-                  lubridate::ymd("2024-6-30"),
+                  lubridate::ymd("2025-6-30"),
                 !financial_year<
                   lubridate::ymd("2019-6-30")
                 ) |>
@@ -170,7 +175,7 @@ ggplot2::ggplot(
     date_labels = "%y", 
     date_breaks = "1 years") +
   ggplot2::coord_cartesian(
-    xlim = c(lubridate::dmy("30-6-2018"),NA)) + 
+    xlim = c(lubridate::dmy("30-6-2019"),NA)) + 
   vpstheme::scale_y_continuvps(
     name="Absolute difference from actual capacity")+
   ggplot2::scale_fill_manual(
@@ -198,7 +203,7 @@ As shown in the table below, relativities calculated using this method would hav
 difference_summary =
   difference.relativities |> 
   dplyr::filter(
-    financial_year>lubridate::dmy("30-6-2018")) |> 
+    financial_year>lubridate::dmy("30-6-2019")) |> 
   dplyr::group_by(state_name, relativity_type) |> 
   dplyr::summarise(mean_value = round(mean(relativity),5),.groups = 'drop') |>
   tidyr::pivot_wider(
@@ -227,19 +232,26 @@ These needs needs reflects each state’s capacity to raise revenue and the amou
 ### Summary of CGC assessment calculations for 2023-24
 
 ```{r assessment_summary, echo = FALSE}
-knitr::kable(
-  latest_summary |>
-  tidyr::pivot_wider(names_from = state_name) |> 
-    mutate_if(
-      is.numeric, 
-      format, 
-      scientific = FALSE,
-      digits = 2, nsmall = 2) |> 
-    dplyr::filter(financial_year == max(financial_year)) |> 
-    dplyr::select(-financial_year) |> 
-    dplyr::rename_with(
-      \(x) stringr::str_replace(x,"_", " "))) |>
-  kableExtra::kable_styling()
+#
+#  tidyr::pivot_wider(
+#    cgcRelativities::latest_summary,
+#    names_from = state_name,
+#    values_from = value) |> 
+#  dplyr::mutate_if(
+#    is.numeric, 
+#    format, 
+#    scientific = FALSE,
+#    digits = 2, 
+#    nsmall = 2) |> 
+#  dplyr::filter(
+#    financial_year == max(financial_year)) |> 
+#  dplyr::select(
+#    -financial_year) |> 
+#  dplyr::rename_with(
+#      \(x) stringr::str_replace(x,"_", " "))) |>
+#  kableExtra::kable_styling()
+
+names(cgcRelativities::latest_summary)
 
 ```
 

@@ -9,11 +9,14 @@ relativities_recommended =
       file_name,
       "time"),
     stringr::str_detect(sheets,"S8"),
-    update_year==2025
+    update_year==2026
   ) |>
   dplyr::mutate(
     data =
-      purrr::pmap(list(download,sheets), readxl::read_excel, range="k2:s500"))  |>
+      purrr::pmap(
+        list(download,sheets),
+        readxl::read_excel,
+        range="k5:s500"))  |>
   tidyr::unnest(data) |>
   janitor::clean_names() |>
   dplyr::mutate(nsw = as.numeric(nsw)) |>
@@ -27,6 +30,7 @@ relativities_recommended =
   dplyr::mutate(financial_year=fy::fy2date(financial_year),
          relativity_type="Recommended")
 
+
 # Save for export
 usethis::use_data(
   relativities_recommended, overwrite = TRUE)
@@ -34,7 +38,7 @@ usethis::use_data(
 remove(relativities_recommended)
 
 # Get annual relativities for most recent years
-cgc.relativities.2020.to.2025 =
+cgc.relativities.2020.to.2026 =
   cgc.data |>
   dplyr::filter(
     stringr::str_detect(
@@ -102,7 +106,7 @@ cgc.relativities.pre2020 =
 relativities_annual =
   dplyr::bind_rows(
     cgc.relativities.pre2020,
-    cgc.relativities.2020.to.2025
+    cgc.relativities.2020.to.2026
   ) |>
   dplyr::mutate(
     financial_year=fy::fy2date(financial_year),
@@ -112,7 +116,7 @@ relativities_annual =
 
 rm(
   cgc.relativities.pre2020,
-  cgc.relativities.2020.to.2025
+  cgc.relativities.2020.to.2026
 )
 
 # Save for export
@@ -139,7 +143,7 @@ latest_summary =
   dplyr::filter(
     stringr::str_detect(download,"Calculation"),
     stringr::str_detect(sheets,"yrly relativities"),
-    update_year==2025
+    update_year==2026
   ) |>
   dplyr::mutate(
     data = purrr::pmap(list(download,sheets), readxl::read_excel, range="a2:j100"))  |>
