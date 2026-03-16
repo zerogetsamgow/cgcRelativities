@@ -1,5 +1,5 @@
 # Get cgc fill urls
-source("~/cgcRelativities/data-raw/get_cgc_urls.R")
+source("./data-raw/get_cgc_urls.R")
 
 # Get recommended relativities history from 2025 review
 relativities_recommended =

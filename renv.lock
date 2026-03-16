@@ -33,6 +33,12 @@
       "Source": "Repository",
       "Repository": "CRAN"
     },
+    "fs": {
+      "Package": "fs",
+      "Version": "1.6.7",
+      "Source": "Repository",
+      "Repository": "CRAN"
+    },
     "glue": {
       "Package": "glue",
       "Version": "1.8.0",

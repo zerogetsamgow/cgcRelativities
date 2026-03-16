@@ -6,7 +6,7 @@ cgc.url = "https://www.cgc.gov.au/reports-for-government/"
 # Create table of URLs to search for files
 cgc.data =
   tibble::tibble(
-    "update_year" = 2015:2025
+    "update_year" = 2015:2026
   ) |>
   dplyr::mutate(
     # CGC urls vary across update_years and reviews, so create correct urls below
@@ -14,7 +14,7 @@ cgc.data =
       dplyr::if_else(update_year %in% 2025,
                      stringr::str_c(cgc.url,update_year,"-methodology-review/gst-relativities-2025-26"),stringr::str_c(cgc.url,update_year,"-update")),
     cgc.update.url =
-      dplyr::if_else(update_year %in% 2024:2025,
+      dplyr::if_else(update_year %in% c(2024:2025,2026),
                      stringr::str_c(cgc.update.url,"/tables-charts-and-supporting-data"),
                              cgc.update.url),
     cgc.update.url =
