@@ -6,7 +6,7 @@ vignette: >
   "%\\VignetteIndexEntry{submission_example}
   %\\VignetteEngine{knitr::rmarkdown}
   %\\VignetteEncoding{UTF-8}\n"
-fontsize: 11pt
+fontsize: 10pt
 ---
 
 ```{r, include = FALSE, echo = FALSE}
@@ -21,7 +21,7 @@ library(cgcRelativities)
 library(dplyr)
 library(tidyr)
 
-names(cgcRelativities::latest_summary)
+
 ```
 
 ## Introduction
@@ -227,32 +227,28 @@ The current approach to assessing state own-source revenue is not delivering a r
 
 The Commonwealth Grants Commission calculates revenue and expenditure ‘needs’ to determine the relativity that is applied to state populations to determine their share of GST.
 
-These needs needs reflects each state’s capacity to raise revenue and the amount each would spend to deliver similar levels of service (as well as assessments of borrowing and investment costs and Commonwealth payments other than the GST). A summary of these calculations for 2023-24 is shown below.
+These needs needs reflects each state’s capacity to raise revenue and the amount each would spend to deliver similar levels of service (as well as assessments of borrowing and investment costs and Commonwealth payments other than the GST). A summary of these calculations for 2024-25 is shown below.
 
-### Summary of CGC assessment calculations for 2023-24
-
+### Summary of CGC assessment calculations for 2024-25
 ```{r assessment_summary, echo = FALSE}
-#
-#  tidyr::pivot_wider(
-#    cgcRelativities::latest_summary,
-#    names_from = state_name,
-#    values_from = value) |> 
-#  dplyr::mutate_if(
-#    is.numeric, 
-#    format, 
-#    scientific = FALSE,
-#    digits = 2, 
-#    nsmall = 2) |> 
-#  dplyr::filter(
-#    financial_year == max(financial_year)) |> 
-#  dplyr::select(
-#    -financial_year) |> 
-#  dplyr::rename_with(
-#      \(x) stringr::str_replace(x,"_", " "))) |>
-#  kableExtra::kable_styling()
-
-names(cgcRelativities::latest_summary)
-
+  tidyr::pivot_wider(
+    cgcRelativities::latest_summary,
+    names_from = state_name,
+    values_from = value) |> 
+  dplyr::mutate_if(
+    is.numeric, 
+    format, 
+    scientific = FALSE,
+    digits = 2, 
+    nsmall = 2) |> 
+  dplyr::filter(
+    financial_year == max(financial_year)) |> 
+  dplyr::select(
+    -financial_year) |> 
+  dplyr::rename_with(
+      \(x) stringr::str_replace(x,"_", " ")) |>
+  knitr::kable() |> 
+  kableExtra::kable_styling()
 ```
 
 The importance of revenue capacity can be seen in Western Australia’s assessment. They were assessed as being able to raise nearly \$3 000 per person more than any other state. Compare this to the amount of GST per person to be shared, and we see much of Western Australia’s relative fiscal strength came from revenue.
