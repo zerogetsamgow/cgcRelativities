@@ -10,7 +10,6 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.path = "man/figures/README-",
   out.width = "100%"
-  
 )
 ```
 
@@ -30,8 +29,8 @@ At present data on relativities and own source revenue are included in the packa
 You can install the development version of cgcRelativities from [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("pak")
-pak::pak("zerogetsamgow/cgcRelativities")
+# install.packages("remotes")
+remotes::install_github("zerogetsamgow/cgcRelativities")
 ```
 
 ## Relativities 

@@ -5,7 +5,7 @@ source("./data-raw/get_cgc_urls.R")
 assessed_revenue_base =
   cgc.data |>
   dplyr::filter(
-    update_year %in% c(2020,2022:2025),
+    update_year %in% c(2020,2022:2026),
     stringr::str_detect(sheets,"Assessed.*rev")
   ) |>
   dplyr::mutate(

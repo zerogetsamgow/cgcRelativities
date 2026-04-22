@@ -103,7 +103,7 @@ ggplot2::ggplot(
     colour = relativity_type))+
   ggplot2::geom_point(size = .6, alpha=.8)+
   ggplot2::facet_wrap(
-    facets = vars(state_name), nrow=2,
+    facets = ggplot2::vars(state_name), nrow=2,
     labeller =
       ggplot2::labeller(
         state_name =
@@ -183,7 +183,10 @@ ggplot2::ggplot(
     values = c(
       ggplot2::alpha(vpstheme::bv.pink,.7),
       ggplot2::alpha(vpstheme::bv.cerulean,.7))) +
-  ggplot2::facet_wrap(facets=vars(state_name),nrow=2) +
+  ggplot2::facet_wrap(
+    facets = 
+      ggplot2::vars(state_name),
+    nrow=2) +
   ggplot2::labs(
     caption = 
       "Tasmania and Northern Territory omitted for consistency.") +
@@ -269,9 +272,10 @@ payroll_per_capita =
       dplyr::group_by(
         financial_year, state_name, revenue_name, revenue_type) |> 
       dplyr::arrange(
-        financial_year, state_name, revenue_name, revenue_type, desc(update_year)) |> 
-      dplyr::slice_head(n=1)) |> 
-  dplyr::left_join(population_erp, by = join_by("state_name","financial_year")) |>
+        financial_year, state_name, revenue_name, revenue_type, desc(update_year))) |> 
+  dplyr::left_join(
+    population_erp, 
+    by = dplyr::join_by("state_name","financial_year")) |>
   dplyr::mutate(
     per_capita = (1e6*revenue)/population
   )
@@ -292,7 +296,9 @@ ggplot2::ggplot(
      name = NULL,
      values = c("Actual"=1,"Assessed"=2))+
    ggplot2::facet_wrap(
-     facets = vars(state_name), nrow=2,
+     facets = 
+       ggplot2::vars(state_name), 
+     nrow=2,
      labeller = 
        ggplot2::labeller(
          state_name = 
@@ -414,7 +420,7 @@ ggplot2::ggplot(
      name = NULL,
      values = c("Current"=1,"Proposed"=2))+
    ggplot2::facet_wrap(
-     facets= vars(state_name),
+     facets = ggplot2::vars(state_name),
      nrow=2,
      labeller = 
        ggplot2::labeller(
@@ -463,7 +469,7 @@ ggplot2::ggplot(
      name = NULL,
      values = c("Current"=1,"Proposed"=2))+
    ggplot2::facet_wrap(
-     facets = vars(state_name), nrow=2,
+     facets = ggplot2::vars(state_name), nrow=2,
      labeller = 
        ggplot2::labeller(
          state_name = 
@@ -529,7 +535,7 @@ ggplot2::ggplot(
    name = NULL,
    values = c("Actual"=1,"Assessed"=2))+
  ggplot2::facet_wrap(
-   facets = vars(state_name), nrow=2,
+   facets = ggplot2::vars(state_name), nrow=2,
    labeller = 
      ggplot2::labeller(
        state_name = ggplot2::label_wrap_gen(width = 20)),

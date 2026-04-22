@@ -1,10 +1,15 @@
+library(cgcRelativities)
+# Define paths, both local and online
+cgc.path = "./data-raw"
+cgc.url = "https://www.cgc.gov.au/reports-for-government/"
+
 
 # Get actual tax revenue from ABS
 taxation_gfs =
   tibble::tibble(
     abs_url =
       stringr::str_c("https://www.abs.gov.au/statistics/economy/government/",
-            "taxation-revenue-australia/2023-24/55060DO001_202324.xlsx")
+            "taxation-revenue-australia/2024-25/55060DO001_202425.xlsx")
   ) |>
   dplyr::mutate(
     file_name = basename(abs_url),

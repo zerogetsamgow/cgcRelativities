@@ -24,8 +24,8 @@ You can install the development version of cgcRelativities from
 [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("pak")
-pak::pak("zerogetsamgow/cgcRelativities")
+# install.packages("remotes")
+remotes::install_github("zerogetsamgow/cgcRelativities")
 ```
 
 ## Relativities
@@ -39,10 +39,10 @@ Relativities data is stored in three files Data is stored as
 recommended = cgcRelativities::relativities_recommended
 
 dplyr::glimpse(recommended)
-#> Rows: 208
+#> Rows: 216
 #> Columns: 6
-#> $ download        <chr> "./data-raw/20258._Relativities_over_time.xlsx", "./da…
-#> $ update_year     <int> 2025, 2025, 2025, 2025, 2025, 2025, 2025, 2025, 2025, …
+#> $ download        <chr> "./data-raw/20268._Relativities_over_time.xlsx", "./da…
+#> $ update_year     <int> 2026, 2026, 2026, 2026, 2026, 2026, 2026, 2026, 2026, …
 #> $ state_name      <fct> New South Wales, Victoria, Queensland, Western Austral…
 #> $ financial_year  <date> 2001-06-30, 2001-06-30, 2001-06-30, 2001-06-30, 2001-…
 #> $ relativity      <dbl> 0.8891397, 0.8451044, 1.0250686, 0.9869240, 1.2043289,…
@@ -56,7 +56,7 @@ dplyr::glimpse(recommended)
 annual = cgcRelativities::relativities_annual
 
 dplyr::glimpse(annual)
-#> Rows: 240
+#> Rows: 264
 #> Columns: 5
 #> $ update_year     <int> 2016, 2017, 2016, 2018, 2017, 2016, 2019, 2018, 2017, …
 #> $ state_name      <chr> "Australian Capital Territory", "Australian Capital Te…
@@ -72,7 +72,7 @@ reforms had not been implemented.
 floorless = cgcRelativities::relativities_floorless
 
 dplyr::glimpse(floorless)
-#> Rows: 80
+#> Rows: 88
 #> Columns: 5
 #> $ state_name      <chr> "Australian Capital Territory", "Australian Capital Te…
 #> $ update_year     <int> 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, …
