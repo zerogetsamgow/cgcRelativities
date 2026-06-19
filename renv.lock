@@ -1,10 +1,10 @@
 {
   "R": {
-    "Version": "4.5.3",
+    "Version": "4.6.0",
     "Repositories": [
       {
         "Name": "CRAN",
-        "URL": "https://packagemanager.posit.co/cran/latest"
+        "URL": "https://cran.ms.unimelb.edu.au"
       }
     ]
   },
@@ -110,7 +110,7 @@
     },
     "curl": {
       "Package": "curl",
-      "Version": "7.0.0",
+      "Version": "7.1.0",
       "Source": "Repository",
       "Type": "Package",
       "Title": "A Modern and Flexible Web Client for R",
@@ -347,7 +347,7 @@
     },
     "openssl": {
       "Package": "openssl",
-      "Version": "2.4.0",
+      "Version": "2.4.1",
       "Source": "Repository",
       "Type": "Package",
       "Title": "Toolkit for Encryption, Signatures and Certificates Based on OpenSSL",
@@ -461,7 +461,7 @@
     },
     "renv": {
       "Package": "renv",
-      "Version": "1.1.5",
+      "Version": "1.2.2",
       "Source": "Repository",
       "Type": "Package",
       "Title": "Project Environments",
@@ -479,6 +479,7 @@
         "compiler",
         "covr",
         "cpp11",
+        "curl",
         "devtools",
         "generics",
         "gitcreds",
@@ -502,7 +503,7 @@
         "webfakes"
       ],
       "Encoding": "UTF-8",
-      "RoxygenNote": "7.3.2",
+      "RoxygenNote": "7.3.3",
       "VignetteBuilder": "knitr",
       "Config/Needs/website": "tidyverse/tidytemplate",
       "Config/testthat/edition": "3",

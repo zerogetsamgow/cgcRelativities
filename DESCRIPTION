@@ -13,7 +13,6 @@ Description: cgcRelativities provides tidy data versions of certain data tables 
 License: CC BY 4.0
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.3
 Depends: 
     R (>= 3.5)
 VignetteBuilder: knitr
@@ -31,3 +30,4 @@ Suggests:
     stringr,
     tidyr
 Roxygen: list(markdown = TRUE)
+Config/roxygen2/version: 8.0.0
